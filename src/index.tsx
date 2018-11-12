@@ -9,6 +9,8 @@ import { applyMiddleware, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 
+(window as any).__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
+
 export const store = createStore(
   appReducer,
   composeWithDevTools(applyMiddleware(thunk))

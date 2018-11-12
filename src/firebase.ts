@@ -27,11 +27,12 @@ firebase.auth().onAuthStateChanged(user => {
     store.dispatch({ type: 'SIGN_IN', user });
     store.dispatch(getArticles());
   } else {
-    store.dispatch({ type: 'RESET' });
+    store.dispatch({ type: 'SIGN_OUT' });
   }
 });
 
 export const uiConfig = {
+  autoUpgradeAnonymousUsers: true,
   callbacks: {
     signInSuccessWithAuthResult: (authResult: any, redirectUrl: any) => {
       return false;

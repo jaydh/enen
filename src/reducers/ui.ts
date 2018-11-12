@@ -1,6 +1,9 @@
 import produce from 'immer';
 
-export default (state = {} as any, action: any) =>
+export default (
+  state = { showCompleted: false, sort: 'date' } as any,
+  action: any
+) =>
   produce(state, draft => {
     switch (action.type) {
       case 'UPDATE_LAST_ARTICLE':
@@ -8,6 +11,12 @@ export default (state = {} as any, action: any) =>
         break;
       case 'SET_SEARCH':
         draft.search = action.value;
+        break;
+      case 'SET_SORT':
+        draft.sort = action.value;
+        break;
+      case 'TOGGLE_SHOW_COMPLETED':
+        draft.showCompleted = !state.showCompleted;
         break;
     }
   });

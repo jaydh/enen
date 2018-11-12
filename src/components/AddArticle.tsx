@@ -5,10 +5,13 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import addArticle from '../actions/addArticle';
+import hash from '../helpers/hash';
 import parseUri from '../helpers/parseURI';
+import { IArticle } from '../reducers/articles';
 
 interface IProps {
   addArticle: (t: string) => void;
+  articles: IArticle[];
 }
 
 interface IState {
@@ -44,6 +47,7 @@ class AddArticle extends React.Component<IProps, IState> {
         <form onSubmit={this.handleSubmit}>
           <Input
             autoFocus={true}
+            error={this.state.value.length > 0 && !this.state.valid}
             onChange={this.handleChange}
             value={this.state.value}
             margin="dense"
@@ -79,15 +83,22 @@ class AddArticle extends React.Component<IProps, IState> {
 
   private getValidationState(value: string) {
     const parse = parseUri(value) as any;
+    const exists = this.props.articles[hash(value)];
     // Checks if valid hyperlink
-    return parse.authority && parse.protocol ? true : false;
+    return !exists && parse.authority && parse.protocol ? true : false;
   }
 }
+
+const mapStateToProps = (state: any) => {
+  return {
+    articles: state.articles
+  };
+};
 
 const mapDispatchToProps = (dispatch: any) =>
   bindActionCreators({ addArticle }, dispatch);
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(AddArticle);

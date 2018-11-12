@@ -139,10 +139,28 @@ table {
 }
 
 .aligner-item {
-  max-width: 50%;
+  max-width: 60%;
 }
 
 #list {
-  height: 80vh;
   overflow: auto;
+  height: 100%;
+}
+
+.loader {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
 }

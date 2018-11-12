@@ -6,6 +6,7 @@ export interface IArticle {
   addedAt: Date;
   metadata?: any;
   HTMLData?: string;
+  completedOn?: Date;
 }
 
 export default (state = { articles: [] as IArticle[] }, action: any) =>
@@ -32,6 +33,14 @@ export default (state = { articles: [] as IArticle[] }, action: any) =>
       case 'UPDATE_ARTICLE':
         draft.articles = draft.articles.map(
           (t: IArticle) => (t.id === action.id ? action.data : t)
+        );
+        break;
+      case 'SET_ARTICLE_COMPLETE_FULFILLED':
+        draft.articles = draft.articles.map(
+          (t: IArticle) =>
+            t.id === action.id
+              ? { ...t, completedOn: action.value ? new Date() : undefined }
+              : t
         );
         break;
     }

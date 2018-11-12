@@ -1,3 +1,4 @@
+import { isBefore } from 'date-fns';
 import * as Fuse from 'fuse.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -92,9 +93,39 @@ const getSearchedArticles = (articles: IArticle[], search: string) => {
   return fuse.search(search);
 };
 
+const getSortedArticles = (articles: IArticle[], sort: string) => {
+  return [...articles].sort((a: IArticle, b: IArticle) => {
+    const aTitle =
+      a.metadata && (a.metadata.title || a.metadata.ogTitle)
+        ? a.metadata.title || a.metadata.ogTitle
+        : a.link;
+
+    const bTitle =
+      b.metadata && (b.metadata.title || b.metadata.ogTitle)
+        ? b.metadata.title || b.metadata.ogTitle
+        : b.link;
+    switch (sort) {
+      case 'title':
+        return aTitle.localeCompare(bTitle);
+      case 'date':
+        return isBefore(a.addedAt, b.addedAt) ? 1 : -1;
+      case 'title-reverse':
+        return bTitle.localeCompare(aTitle);
+      case 'date-reverse':
+        return isBefore(b.addedAt, a.addedAt) ? 1 : -1;
+    }
+    return 1;
+  });
+};
+
 const mapStateToProps = (state: any) => {
+  const filtered = state.articles.articles.filter(
+    (t: IArticle) => state.ui.showCompleted || !t.completedOn
+  );
+  const searched = getSearchedArticles(filtered, state.ui.search);
+  const sorted = getSortedArticles(searched, state.ui.sort);
   return {
-    articles: getSearchedArticles(state.articles.articles, state.ui.search)
+    articles: sorted
   };
 };
 

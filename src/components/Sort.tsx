@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import setSort from '../actions/setSort';
+import toggleShowCompleted from '../actions/toggleShowCompleted';
 
 import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -10,10 +12,19 @@ import MenuList from '@material-ui/core/MenuList';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import { withStyles } from '@material-ui/core/styles';
-import SortIcon from '@material-ui/icons/SortByAlpha';
+import Switch from '@material-ui/core/Switch';
+import Down from '@material-ui/icons/KeyboardArrowDown';
+import Up from '@material-ui/icons/KeyboardArrowUp';
+import SortIcon from '@material-ui/icons/Sort';
+import TitleIcon from '@material-ui/icons/SortByAlpha';
+import Update from '@material-ui/icons/Update';
 
 interface IProps {
   classes: any;
+  currentSort: string;
+  showCompleted: boolean;
+  setSort: (t: string) => void;
+  toggleShowCompleted: () => void;
 }
 
 interface IState {
@@ -28,9 +39,10 @@ class Sort extends React.Component<IProps, IState> {
     this.handleClose = this.handleClose.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
     this.handleRef = this.handleRef.bind(this);
+    this.handleSort = this.handleSort.bind(this);
   }
   public render() {
-    const { classes } = this.props;
+    const { classes, currentSort } = this.props;
     const { open } = this.state;
 
     return (
@@ -41,7 +53,7 @@ class Sort extends React.Component<IProps, IState> {
           aria-haspopup="true"
           onClick={this.handleToggle}
         >
-          <SortIcon />
+          <SortIcon fontSize="small" />
         </Button>
         <Popper
           className={classes.options}
@@ -61,9 +73,37 @@ class Sort extends React.Component<IProps, IState> {
               <Paper>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList className={classes.options}>
-                    <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                    <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                    <MenuItem onClick={this.handleClose}>Logout</MenuItem>
+                    <MenuItem>
+                      Show Completed
+                      <Switch
+                        className={classes.switch}
+                        color="primary"
+                        checked={this.props.showCompleted}
+                        onChange={this.props.toggleShowCompleted}
+                      />
+                    </MenuItem>
+                    <MenuItem
+                      onClick={
+                        currentSort === 'date'
+                          ? this.handleSort('date-reverse')
+                          : this.handleSort('date')
+                      }
+                    >
+                      <Update fontSize="small" /> Dated Added{' '}
+                      {currentSort.startsWith('date') &&
+                        (currentSort === 'date' ? <Down /> : <Up />)}
+                    </MenuItem>
+                    <MenuItem
+                      onClick={
+                        currentSort === 'title'
+                          ? this.handleSort('title-reverse')
+                          : this.handleSort('title')
+                      }
+                    >
+                      <TitleIcon fontSize="small" /> Title{' '}
+                      {currentSort.startsWith('title') &&
+                        (currentSort === 'title' ? <Down /> : <Up />)}
+                    </MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
@@ -88,21 +128,33 @@ class Sort extends React.Component<IProps, IState> {
   private handleRef(node: any) {
     this.setState({ anchorEl: node });
   }
+
+  private handleSort = (sort: string) => () => {
+    this.props.setSort(sort);
+  };
 }
 
 const styles = {
   options: {
+    colorPrimary: '#855a91',
     zIndex: 100
   },
-
   root: {
     display: 'flex'
   }
 };
 
-const mapDispatchToProps = (dispatch: any) => bindActionCreators({}, dispatch);
+const mapStateToProps = (state: any) => {
+  return {
+    currentSort: state.ui.sort,
+    showCompleted: state.ui.showCompleted
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) =>
+  bindActionCreators({ setSort, toggleShowCompleted }, dispatch);
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(withStyles(styles)(Sort));

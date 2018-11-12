@@ -1,12 +1,13 @@
 import { combineReducers } from 'redux';
 import articles from './articles';
+import graphData from './graphData';
 import ui from './ui';
 import user from './userReducer';
 
-const appReducer = combineReducers({ articles, ui, user });
+const appReducer = combineReducers({ articles, graphData, ui, user });
 
 const rootReducer = (state: any, action: any) => {
-  if (action.type === 'USER_LOGOUT' || action.type === 'DELETE_USER_DATA') {
+  if (action.type === 'SIGN_OUT' || action.type === 'DELETE_USER_DATA') {
     state = undefined;
   }
 

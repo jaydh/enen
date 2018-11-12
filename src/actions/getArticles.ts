@@ -1,3 +1,4 @@
+import { parse } from 'date-fns';
 import { database } from '../firebase';
 
 interface IGetArticlesRequested {
@@ -33,7 +34,9 @@ export default () => {
       // Get ids and timestamp data
       let articles = await articlesRef.get().then(querySnapshot => {
         const data: any = [];
-        querySnapshot.forEach(doc => data.push(doc.data()));
+        querySnapshot.forEach(doc =>
+          data.push({ ...doc.data(), addedAt: parse(doc.data().addedAt) })
+        );
         return data;
       });
       // Merge user article data with db data
@@ -44,7 +47,6 @@ export default () => {
             .doc(article.id)
             .get()
             .then((doc: any) => doc.data());
-
           return (
             article &&
             Object.assign({}, article, {

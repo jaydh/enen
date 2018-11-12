@@ -65,8 +65,10 @@ class LabelBottomNavigation extends React.Component<IProps> {
 
 const styles = {
   root: {
-    backgroundColor: '#855a91',
+    backgroundColor: '#F4ECD8',
+    borderTop: 'inset 1px',
     bottom: 0,
+    height: '7vh',
     justifyContent: 'center',
     padding: 0,
     position: 'fixed',

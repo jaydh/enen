@@ -1,29 +1,46 @@
 import * as React from 'react';
+import * as Loadable from 'react-loadable';
 import { connect } from 'react-redux';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import getArticles from './actions/getArticles';
-import AddArticle from './components/AddArticle';
-import ArticleView from './components/ArticleView';
-import List from './components/List';
-import Login from './components/Login';
-import Nav from './components/Nav';
-import Search from './components/Search';
-import Sort from './components/Sort';
-import User from './components/User';
+import Loader from './components/Loader';
 import './index.css';
 
-import Grid from '@material-ui/core/Grid';
+const ListMain = Loadable({
+  loader: () => import('./containers/ListMain'),
+  loading: Loader as any
+});
+const UserPage = Loadable({
+  loader: () => import('./containers/UserPage'),
+  loading: Loader as any
+});
+const ArticleView = Loadable({
+  loader: () => import('./components/ArticleView'),
+  loading: Loader as any
+});
+const StatsMain = Loadable({
+  loader: () => import('./containers/StatsMain'),
+  loading: Loader as any
+});
+const Nav = Loadable({
+  loader: () => import('./components/Nav'),
+  loading: Loader as any
+});
 
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-
-class App extends React.Component<{ signedIn: boolean }> {
+class App extends React.Component<{ getArticles: () => void }> {
+  public componentDidMount() {
+    this.props.getArticles();
+  }
   public render() {
     return (
       <Router>
         <div className="App">
+          <Route exact={true} path="/" component={ListMain} />
           <Route path="/list" component={ListMain} />
           <Route path="/me" component={UserPage} />
           <Route path="/article/:id" component={ArticleView} />
+          <Route path="/stats" component={StatsMain} />
           <Nav />
         </div>
       </Router>
@@ -31,44 +48,10 @@ class App extends React.Component<{ signedIn: boolean }> {
   }
 }
 
-const ListMain = (match: any) => (
-  <>
-    <Grid container={true} spacing={40} alignItems="center" justify="center">
-      <Grid item={true}>
-        <AddArticle />
-      </Grid>
-      <Grid item={true}>
-        <Search />
-      </Grid>
-      <Grid item={true}>
-        <Sort />
-      </Grid>
-    </Grid>
-    <List />
-  </>
-);
-
-const UserPage = () => (
-  <Grid container={true} justify="center" alignItems="center">
-    <Grid item={true}>
-      <User />
-    </Grid>
-    <Grid item={true}>
-      <Login />
-    </Grid>
-  </Grid>
-);
-
-const mapStateToProps = (state: any) => {
-  return {
-    signedIn: state.user.signedIn
-  };
-};
-
 const mapDispatchToProps = (dispatch: any) =>
   bindActionCreators({ getArticles }, dispatch);
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(App);

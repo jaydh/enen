@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^3.4.0",
     "@material-ui/icons": "^3.0.1",
+    "date-fns": "^1.29.0",
     "firebase": "^5.5.7",
     "firebaseui": "^3.4.1",
     "fuse.js": "^3.3.0",
@@ -12,13 +13,15 @@
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
     "react-html-parser": "^2.0.2",
+    "react-loadable": "^5.5.0",
     "react-redux": "^5.1.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts-ts": "3.1.0",
     "redux": "^4.0.1",
     "redux-persist": "^5.10.0",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "victory": "^31.0.0"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -31,9 +34,11 @@
     "@types/node": "^10.12.3",
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
+    "@types/react-loadable": "^5.4.1",
     "@types/react-redux": "^6.0.9",
     "@types/react-router-dom": "^4.3.1",
     "@types/react-virtualized": "^9.18.7",
+    "@types/victory": "^0.9.21",
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",
     "jest": "^23.6.0",
