@@ -4,6 +4,7 @@ export interface IArticle {
   id: string;
   link: string;
   addedAt: Date;
+  bookmark?: string;
   metadata?: any;
   HTMLData?: string;
   completedOn?: Date;

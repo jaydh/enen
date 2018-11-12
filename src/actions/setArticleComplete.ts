@@ -43,8 +43,6 @@ function setArticleCompleteFulfilled(
 
 export default function setArticleComplete(id: string, value: boolean) {
   return async (dispatch: any, getState: any) => {
-    // tslint:disable:no-console
-    console.log(value);
     dispatch(setArticleCompleteRequested());
 
     const userRef = database
