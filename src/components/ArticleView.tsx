@@ -20,12 +20,14 @@ interface IProps {
   classes: any;
   getHTML: () => void;
   match: any;
+  uid: string;
   updateBookmark: (id: string, bookmark: string) => void;
   updateLastArticle: (t: string) => void;
 }
 
 interface IState {
   HTMLData?: string;
+  bookmark?: string;
   link?: string;
   metadata?: any;
   fetching: boolean;
@@ -42,6 +44,7 @@ class ArticleView extends React.Component<IProps, IState> {
       intervalId: null
     };
     this.getBookmark = this.getBookmark.bind(this);
+    this.scrollToBookmark = this.scrollToBookmark.bind(this);
   }
 
   public async componentDidMount() {
@@ -49,10 +52,10 @@ class ArticleView extends React.Component<IProps, IState> {
     if (this.props.match.params.id) {
       this.props.updateLastArticle(this.props.match.params.id);
     }
-
+    const articleId = this.props.match.params.id;
     await database
       .collection('articleDB')
-      .doc(this.props.match.params.id)
+      .doc(articleId)
       .get()
       .then((doc: any) =>
         this.setState({
@@ -63,6 +66,18 @@ class ArticleView extends React.Component<IProps, IState> {
         })
       );
 
+    await database
+      .collection('userData')
+      .doc(this.props.uid)
+      .collection('articles')
+      .doc(articleId)
+      .get()
+      .then((doc: any) =>
+        this.setState({
+          bookmark: doc.data() ? doc.data().bookmark : undefined
+        })
+      );
+
     // Find all nodes in page with textContent
     this.setState({
       articleNodeList: Array.from(
@@ -70,6 +85,7 @@ class ArticleView extends React.Component<IProps, IState> {
       ).filter(el => el.textContent),
       intervalId: setInterval(this.getBookmark, 20000)
     });
+    this.scrollToBookmark();
   }
 
   public componentWillUnmount() {
@@ -147,13 +163,30 @@ class ArticleView extends React.Component<IProps, IState> {
       }
     }
   }
+
+  private scrollToBookmark() {
+    if (this.state.bookmark) {
+      const elements = this.state.articleNodeList;
+      const target = Array.from(elements).find(
+        (el: any) => el.textContent === this.state.bookmark
+      ) as HTMLElement;
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
+    }
+  }
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
   return {
     article: state.articles.articles.find(
       (t: IArticle) => t.id === ownProps.match.params.id
-    )
+    ),
+    uid: state.user.uid
   };
 };
 

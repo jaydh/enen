@@ -44,5 +44,11 @@ export default (state = { articles: [] as IArticle[] }, action: any) =>
               : t
         );
         break;
+      case 'UPDATE_BOOKMARK_FULFILLED':
+        draft.articles = draft.articles.map(
+          (t: IArticle) =>
+            t.id === action.id ? { ...t, bookmark: action.bookmark } : t
+        );
+        break;
     }
   });
