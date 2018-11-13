@@ -8,9 +8,11 @@ import Loader from '../components/Loader';
 import { database } from '../firebase';
 import { IArticle } from '../reducers/articles';
 
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
 interface IProps {
   article: IArticle;
@@ -23,7 +25,9 @@ interface IProps {
 }
 
 interface IState {
-  HTMLData: string;
+  HTMLData?: string;
+  link?: string;
+  metadata?: any;
   fetching: boolean;
   articleNodeList: any;
   intervalId: any;
@@ -33,7 +37,6 @@ class ArticleView extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      HTMLData: '',
       articleNodeList: null,
       fetching: true,
       intervalId: null
@@ -52,7 +55,12 @@ class ArticleView extends React.Component<IProps, IState> {
       .doc(this.props.match.params.id)
       .get()
       .then((doc: any) =>
-        this.setState({ HTMLData: doc.data().HTMLData, fetching: false })
+        this.setState({
+          HTMLData: doc.data() ? doc.data().HTMLData : undefined,
+          fetching: false,
+          link: doc.data() ? doc.data().link : undefined,
+          metadata: doc.data() ? doc.data().metadata : undefined
+        })
       );
 
     // Find all nodes in page with textContent
@@ -69,13 +77,26 @@ class ArticleView extends React.Component<IProps, IState> {
   }
 
   public render() {
-    // tslint:disable:no-console
-    console.log(this.props);
     const { classes } = this.props;
-    const { HTMLData, fetching } = this.state;
-    return (
+    const { HTMLData, fetching, metadata, link } = this.state;
+    const title =
+      metadata && (metadata.title || metadata.ogTitle)
+        ? metadata.title || metadata.ogTitle
+        : link;
+
+    const siteName = metadata && (metadata.siteName || metadata.ogSiteName);
+    const description =
+      metadata && (metadata.ogDescrption || metadata.description);
+    const subtitle = `${siteName ? siteName : ''} ${
+      description ? '-' + description : ''
+    }`;
+
+    return fetching || HTMLData ? (
       <Grid container={true} alignItems="center" justify="center">
         <Paper elevation={10} className={classes.root}>
+          <Typography variant="title">{title}</Typography>
+          <Typography variant="subtitle1">{subtitle}</Typography>
+          <Divider className={classes.title} />
           {fetching ? (
             <Loader isLoading={fetching} />
           ) : (
@@ -90,6 +111,10 @@ class ArticleView extends React.Component<IProps, IState> {
             })
           )}
         </Paper>
+      </Grid>
+    ) : (
+      <Grid container={true} alignItems="center" justify="center">
+        <Typography variant="h3">Unavailable</Typography>
       </Grid>
     );
   }
@@ -136,7 +161,8 @@ const mapDispatchToProps = (dispatch: any) =>
   bindActionCreators({ updateLastArticle, updateBookmark }, dispatch);
 
 const styles = {
-  root: { maxWidth: '75vw', padding: '8em 4em' }
+  root: { maxWidth: '75vw', padding: '2em 4em' },
+  title: { marginBottom: '4em' }
 };
 export default connect(
   mapStateToProps,
