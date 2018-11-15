@@ -21,7 +21,7 @@ function updateBookmarkFulfilled(id: string, bookmark: string) {
   };
 }
 
-export default function setArticleComplete(id: string, bookmark: string) {
+export default function updateBookmark(id: string, bookmark: string) {
   return async (dispatch: any, getState: any) => {
     dispatch(updateBookmarkRequested());
     const userRef = database

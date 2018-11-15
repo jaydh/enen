@@ -8,6 +8,7 @@ export interface IArticle {
   metadata?: any;
   HTMLData?: string;
   completedOn?: Date;
+  progress?: number;
 }
 
 export default (state = { articles: [] as IArticle[] }, action: any) =>
@@ -48,6 +49,12 @@ export default (state = { articles: [] as IArticle[] }, action: any) =>
         draft.articles = draft.articles.map(
           (t: IArticle) =>
             t.id === action.id ? { ...t, bookmark: action.bookmark } : t
+        );
+        break;
+      case 'UPDATE_PROGRESS_FULFILLED':
+        draft.articles = draft.articles.map(
+          (t: IArticle) =>
+            t.id === action.id ? { ...t, progress: action.progress } : t
         );
         break;
     }

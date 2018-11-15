@@ -35,14 +35,14 @@ class App extends React.Component<{ getArticles: () => void }> {
   public render() {
     return (
       <Router>
-        <div className="App">
+        <>
           <Route exact={true} path="/" component={ListMain} />
           <Route path="/list" component={ListMain} />
           <Route path="/me" component={UserPage} />
           <Route path="/article/:id" component={ArticleView} />
           <Route path="/stats" component={StatsMain} />
           <Nav />
-        </div>
+        </>
       </Router>
     );
   }

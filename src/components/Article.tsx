@@ -14,6 +14,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
@@ -48,6 +49,10 @@ class Article extends React.Component<IProps, IState> {
 
   public render() {
     const { article, classes } = this.props;
+    const { progress } = article;
+
+    // tslint:disable:no-console
+    console.log(progress);
 
     const title =
       article.metadata && (article.metadata.title || article.metadata.ogTitle)
@@ -79,19 +84,34 @@ class Article extends React.Component<IProps, IState> {
             onChange={this.props.handler}
           >
             <ExpansionPanelSummary>
-              <Avatar src={image} />
-              <ListItemText primary={title} secondary={description} />
-              <Fade in={this.state.showRead || this.props.expanded}>
-                <Link to={`/article/${article.id}`}>
-                  <IconButton
-                    disabled={true}
-                    className={classes.button}
-                    aria-label="Delete"
-                  >
-                    <ReadIcon />
-                  </IconButton>
-                </Link>
-              </Fade>
+              <Grid container={true}>
+                <Grid item={true} xs={3} sm={2} md={1} lg={1}>
+                  <Avatar src={image} />
+                </Grid>
+                <Grid item={true} xs={6} sm={8} md={10} lg={10}>
+                  <ListItemText primary={title} secondary={description} />
+                </Grid>
+                <Grid item={true} xs={3} sm={2} md={1} lg={1}>
+                  <Fade in={this.state.showRead || this.props.expanded}>
+                    <Link to={`/article/${article.id}`}>
+                      <IconButton
+                        disabled={true}
+                        className={classes.button}
+                        aria-label="Delete"
+                      >
+                        <ReadIcon />
+                      </IconButton>
+                    </Link>
+                  </Fade>
+                </Grid>
+                <Grid item={true} xs={12} sm={12} md={12} lg={12}>
+                  {progress && (
+                    <div style={{ width: '100%' }}>
+                      <LinearProgress variant="determinate" value={progress} />
+                    </div>
+                  )}
+                </Grid>
+              </Grid>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <Icon>
@@ -144,6 +164,8 @@ const styles = {
     margin: 5
   },
   root: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
     width: '100%'
   }
 };

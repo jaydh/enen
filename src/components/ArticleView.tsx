@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import updateBookmark from '../actions/updateBookmark';
 import updateLastArticle from '../actions/updateLastArticle';
+import updateProgress from '../actions/updateProgress';
 import Loader from '../components/Loader';
 import { database } from '../firebase';
 
@@ -20,6 +21,7 @@ interface IProps {
   match: any;
   uid: string;
   updateBookmark: (id: string, bookmark: string) => void;
+  updateProgress: (id: string, progress: number) => void;
   updateLastArticle: (t: string) => void;
 }
 
@@ -28,6 +30,7 @@ interface IState {
   bookmark?: string;
   link?: string;
   metadata?: any;
+  progress?: number;
   fetching: boolean;
   articleNodeList: any;
   intervalId: any;
@@ -43,6 +46,7 @@ class ArticleView extends React.Component<IProps, IState> {
     };
     this.getBookmark = this.getBookmark.bind(this);
     this.scrollToBookmark = this.scrollToBookmark.bind(this);
+    this.getProgress = this.getProgress.bind(this);
   }
 
   public async componentDidMount() {
@@ -72,7 +76,8 @@ class ArticleView extends React.Component<IProps, IState> {
       .get()
       .then((doc: any) =>
         this.setState({
-          bookmark: doc.data() ? doc.data().bookmark : undefined
+          bookmark: doc.data() ? doc.data().bookmark : undefined,
+          progress: doc.data() ? doc.data().progress : undefined
         })
       );
 
@@ -81,7 +86,10 @@ class ArticleView extends React.Component<IProps, IState> {
       articleNodeList: Array.from(
         document.querySelectorAll('div.page p')
       ).filter(el => el.textContent),
-      intervalId: setInterval(this.getBookmark, 20000)
+      intervalId: setInterval(() => {
+        this.getBookmark();
+        this.getProgress();
+      }, 20000)
     });
     this.scrollToBookmark();
   }
@@ -161,18 +169,33 @@ class ArticleView extends React.Component<IProps, IState> {
   }
 
   private scrollToBookmark() {
-    // tslint:disable:no-console
-    console.log(this.state);
     const elements = this.state.articleNodeList;
-    const target = Array.from(elements).find(
-      (el: any) => el.textContent === this.state.bookmark
-    ) as HTMLElement;
-    if (target) {
-      target.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest'
-      });
+    if (elements) {
+      const target = Array.from(elements).find(
+        (el: any) => el.textContent === this.state.bookmark
+      ) as HTMLElement;
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
+    }
+  }
+
+  private getProgress() {
+    const h = document.documentElement;
+    if (h) {
+      const id = this.props.match.params.id;
+      const b = document.body;
+      const st = 'scrollTop';
+      const sh = 'scrollHeight';
+      const newProgress =
+        ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+      if (newProgress !== this.state.progress) {
+        this.props.updateProgress(id, newProgress);
+      }
     }
   }
 }
@@ -185,7 +208,10 @@ const mapStateToProps = (state: any, ownProps: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators({ updateLastArticle, updateBookmark }, dispatch);
+  bindActionCreators(
+    { updateLastArticle, updateBookmark, updateProgress },
+    dispatch
+  );
 
 const styles = {
   root: { maxWidth: '75vw', padding: '2em 4em' },
