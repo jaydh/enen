@@ -59,7 +59,7 @@ class LabelBottomNavigation extends React.Component<IProps> {
           icon={<Person />}
         />
         <Fade in={value === '/article/' + this.props.lastArticle}>
-          <Toolbar className={classes.rightSide}>
+          <Toolbar className={classes.rightSide} variant="dense">
             <ArticleViewOptions />
           </Toolbar>
         </Fade>

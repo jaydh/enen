@@ -80,16 +80,17 @@ class ArticleView extends React.Component<IProps, IState> {
           progress: doc.data() ? doc.data().progress : undefined
         })
       );
+    const intervalId = setInterval(() => {
+      this.getBookmark();
+      this.getProgress();
+    }, 20000);
 
     // Find all nodes in page with textContent
     await this.setState({
       articleNodeList: Array.from(
         document.querySelectorAll('div.page p')
       ).filter(el => el.textContent),
-      intervalId: setInterval(() => {
-        this.getBookmark();
-        this.getProgress();
-      }, 20000)
+      intervalId
     });
     this.scrollToBookmark();
   }
@@ -160,9 +161,7 @@ class ArticleView extends React.Component<IProps, IState> {
       ) {
         // Use previous element unless first element
         const newBookmark = elements[i > 0 ? i - 1 : i].textContent;
-        if (newBookmark !== this.state.bookmark) {
-          this.props.updateBookmark(id, newBookmark);
-        }
+        this.props.updateBookmark(id, newBookmark);
         return;
       }
     }
