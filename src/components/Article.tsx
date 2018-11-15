@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import deleteArticle from '../actions/deleteArticle';
-import setArticleComplete from '../actions/setArticleComplete';
 import { IArticle } from '../reducers/articles';
+import FollowLink from './actionDispatchers/FollowLink';
+import ToggleCompleted from './actionDispatchers/ToggleCompleted';
 
 import Avatar from '@material-ui/core/Avatar';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -21,8 +22,6 @@ import IconButton from '@material-ui/core/IconButton';
 import ReadIcon from '@material-ui/icons/ChromeReaderMode';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import DeleteIcon from '@material-ui/icons/Delete';
-import DoneIcon from '@material-ui/icons/Done';
-import ExternalIcon from '@material-ui/icons/Launch';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -33,7 +32,6 @@ interface IProps {
   expanded: boolean;
   handler: (event: any, expanded: any) => void;
   deleteArticle: (id: string) => void;
-  setArticleComplete: (id: string, t: boolean) => void;
 }
 
 interface IState {
@@ -46,8 +44,6 @@ class Article extends React.Component<IProps, IState> {
     this.state = { showRead: false };
     this.handleDelete = this.handleDelete.bind(this);
     this.toggleShowRead = this.toggleShowRead.bind(this);
-    this.handleGoToLink = this.handleGoToLink.bind(this);
-    this.handleToggleComplete = this.handleToggleComplete.bind(this);
   }
 
   public render() {
@@ -105,22 +101,8 @@ class Article extends React.Component<IProps, IState> {
                 {new Date(article.addedAt).toLocaleDateString()}
               </Typography>
               <Grid container={true} alignItems="flex-end" justify="flex-end">
-                <IconButton
-                  className={classes.button}
-                  color={article.completedOn ? 'secondary' : 'primary'}
-                  aria-label="Mark Complete"
-                  onClick={this.handleToggleComplete}
-                >
-                  <DoneIcon />
-                </IconButton>
-                <IconButton
-                  className={classes.button}
-                  color="primary"
-                  aria-label="Go to link"
-                  onClick={this.handleGoToLink}
-                >
-                  <ExternalIcon />
-                </IconButton>
+                <ToggleCompleted id={article.id} />
+                <FollowLink id={article.id} />
                 <IconButton
                   className={classes.button}
                   color="secondary"
@@ -144,17 +126,6 @@ class Article extends React.Component<IProps, IState> {
   private handleDelete() {
     this.props.deleteArticle(this.props.id);
   }
-
-  private handleGoToLink() {
-    window.open(this.props.article.link, '_blank');
-  }
-
-  private handleToggleComplete() {
-    const id = this.props.article.id;
-    return this.props.article.completedOn
-      ? this.props.setArticleComplete(id, false)
-      : this.props.setArticleComplete(id, true);
-  }
 }
 
 const mapStateToProps = (state: any, ownProps: { id: string }) => {
@@ -164,7 +135,7 @@ const mapStateToProps = (state: any, ownProps: { id: string }) => {
 };
 
 const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators({ deleteArticle, setArticleComplete }, dispatch);
+  bindActionCreators({ deleteArticle }, dispatch);
 
 const styles = {
   button: {

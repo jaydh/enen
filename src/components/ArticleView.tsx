@@ -6,7 +6,6 @@ import updateBookmark from '../actions/updateBookmark';
 import updateLastArticle from '../actions/updateLastArticle';
 import Loader from '../components/Loader';
 import { database } from '../firebase';
-import { IArticle } from '../reducers/articles';
 
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
@@ -15,7 +14,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 interface IProps {
-  article: IArticle;
   fontSize: number;
   classes: any;
   getHTML: () => void;
@@ -79,7 +77,7 @@ class ArticleView extends React.Component<IProps, IState> {
       );
 
     // Find all nodes in page with textContent
-    this.setState({
+    await this.setState({
       articleNodeList: Array.from(
         document.querySelectorAll('div.page p')
       ).filter(el => el.textContent),
@@ -93,7 +91,7 @@ class ArticleView extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const { classes } = this.props;
+    const { classes, fontSize } = this.props;
     const { HTMLData, fetching, metadata, link } = this.state;
     const title =
       metadata && (metadata.title || metadata.ogTitle)
@@ -113,19 +111,21 @@ class ArticleView extends React.Component<IProps, IState> {
           <Typography variant="title">{title}</Typography>
           <Typography variant="subtitle1">{subtitle}</Typography>
           <Divider className={classes.title} />
-          {fetching ? (
-            <Loader isLoading={fetching} />
-          ) : (
-            ReactHTMLParser(HTMLData, {
-              transform: (node: any, index: number) => {
-                if (node.name === 'img') {
-                  node.attribs.class = 'img-fluid';
+          <div style={{ fontSize }}>
+            {fetching ? (
+              <Loader isLoading={fetching} />
+            ) : (
+              ReactHTMLParser(HTMLData, {
+                transform: (node: any, index: number) => {
+                  if (node.name === 'img') {
+                    node.attribs.class = 'img-fluid';
+                    return undefined;
+                  }
                   return undefined;
                 }
-                return undefined;
-              }
-            })
-          )}
+              })
+            )}
+          </div>
         </Paper>
       </Grid>
     ) : (
@@ -137,55 +137,49 @@ class ArticleView extends React.Component<IProps, IState> {
 
   private getBookmark() {
     const elements = this.state.articleNodeList;
-    const { article } = this.props;
+    const id = this.props.match.params.id;
 
-    if (article) {
-      for (let i = 0, max = elements.length; i < max; i++) {
-        const element = elements[i];
-        const rect = element.getBoundingClientRect();
-        if (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight || document.documentElement!.clientHeight) &&
-          rect.right <=
-            (window.innerWidth || document.documentElement!.clientWidth) &&
-          element.textContent !== article.bookmark &&
-          element.textContent !== ''
-        ) {
-          // Use previous element unless first element
-          this.props.updateBookmark(
-            article.id,
-            elements[i > 0 ? i - 1 : i].textContent
-          );
-          break;
+    for (let i = 0, max = elements.length; i < max; i++) {
+      const element = elements[i];
+      const rect = element.getBoundingClientRect();
+      if (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement!.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement!.clientWidth)
+      ) {
+        // Use previous element unless first element
+        const newBookmark = elements[i > 0 ? i - 1 : i].textContent;
+        if (newBookmark !== this.state.bookmark) {
+          this.props.updateBookmark(id, newBookmark);
         }
+        return;
       }
     }
   }
 
   private scrollToBookmark() {
-    if (this.state.bookmark) {
-      const elements = this.state.articleNodeList;
-      const target = Array.from(elements).find(
-        (el: any) => el.textContent === this.state.bookmark
-      ) as HTMLElement;
-      if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-          inline: 'nearest'
-        });
-      }
+    // tslint:disable:no-console
+    console.log(this.state);
+    const elements = this.state.articleNodeList;
+    const target = Array.from(elements).find(
+      (el: any) => el.textContent === this.state.bookmark
+    ) as HTMLElement;
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
     }
   }
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
   return {
-    article: state.articles.articles.find(
-      (t: IArticle) => t.id === ownProps.match.params.id
-    ),
+    fontSize: state.ui.fontSize,
     uid: state.user.uid
   };
 };

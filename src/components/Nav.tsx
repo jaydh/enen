@@ -1,13 +1,17 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import ArticleViewOptions from './ArticleViewOptions';
 
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+import Fade from '@material-ui/core/Fade';
 import { withStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
 import CollectionsBookmark from '@material-ui/icons/CollectionsBookmark';
 import List from '@material-ui/icons/List';
 import Person from '@material-ui/icons/Person';
 import Timeline from '@material-ui/icons/Timeline';
+
 import { withRouter } from 'react-router-dom';
 
 interface IProps {
@@ -26,14 +30,14 @@ class LabelBottomNavigation extends React.Component<IProps> {
   }
 
   public render() {
-    const { user } = this.props;
+    const { classes, location, user } = this.props;
     const { displayName } = user;
     const initials = displayName ? displayName.match(/\b\w/g).join('') : '';
-    const value = this.props.location.pathname;
+    const value = location.pathname;
 
     return (
       <BottomNavigation
-        className={this.props.classes.root}
+        className={classes.root}
         showLabels={true}
         value={value}
         onChange={this.handleChange}
@@ -41,7 +45,7 @@ class LabelBottomNavigation extends React.Component<IProps> {
         <BottomNavigationAction label="List" value="/list" icon={<List />} />
         <BottomNavigationAction
           label="Article"
-          value={`/article/${this.props.lastArticle}`}
+          value={'/article/' + this.props.lastArticle}
           icon={<CollectionsBookmark />}
         />
         <BottomNavigationAction
@@ -54,6 +58,11 @@ class LabelBottomNavigation extends React.Component<IProps> {
           value="/me"
           icon={<Person />}
         />
+        <Fade in={value === '/article/' + this.props.lastArticle}>
+          <Toolbar className={classes.rightSide}>
+            <ArticleViewOptions />
+          </Toolbar>
+        </Fade>
       </BottomNavigation>
     );
   }
@@ -64,6 +73,7 @@ class LabelBottomNavigation extends React.Component<IProps> {
 }
 
 const styles = {
+  rightSide: { position: 'absolute', right: 0 },
   root: {
     backgroundColor: '#F4ECD8',
     borderTop: 'inset 1px',

@@ -41,6 +41,7 @@ class Sort extends React.Component<IProps, IState> {
     this.handleRef = this.handleRef.bind(this);
     this.handleSort = this.handleSort.bind(this);
   }
+
   public render() {
     const { classes, currentSort } = this.props;
     const { open } = this.state;

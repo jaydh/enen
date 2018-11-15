@@ -1,7 +1,7 @@
 import produce from 'immer';
 
 export default (
-  state = { showCompleted: false, sort: 'date' } as any,
+  state = { showCompleted: false, sort: 'date', fontSize: 16 } as any,
   action: any
 ) =>
   produce(state, draft => {
@@ -18,5 +18,10 @@ export default (
       case 'TOGGLE_SHOW_COMPLETED':
         draft.showCompleted = !state.showCompleted;
         break;
+      case 'INCREASE_FONT_SIZE':
+        draft.fontSize += 1;
+        break;
+      case 'DECREASE_FONT_SIZE':
+        draft.fontSize -= 1;
     }
   });
