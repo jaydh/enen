@@ -32,22 +32,15 @@ class List extends React.Component<IProps, IState> {
   public render() {
     const { articles } = this.props;
     return (
-      <div id="list" className="aligner">
-        <MaterialList className="aligner-item">
-          {articles.map((t: IArticle) => (
-            <div key={t.id}>
-              <Article
-                expanded={this.state.expandedPanel === t.id}
-                handler={this.handleChange(
-                  t.id,
-                  this.state.expandedPanel === t.id
-                )}
-                id={t.id}
-              />
-            </div>
-          ))}{' '}
-        </MaterialList>
-      </div>
+      <MaterialList className="aligner-item">
+        {articles.map((t: IArticle) => (
+          <Article
+            expanded={this.state.expandedPanel === t.id}
+            handler={this.handleChange(t.id, this.state.expandedPanel === t.id)}
+            id={t.id}
+          />
+        ))}{' '}
+      </MaterialList>
     );
   }
 

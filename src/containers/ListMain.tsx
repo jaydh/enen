@@ -35,9 +35,12 @@ class ListMain extends React.Component<IProps> {
               </Grid>
             </>
           )}
-        </Grid>
-        <Grid container={true} style={{ height: '90vh' }}>
-          <Grid item={true}>
+          <Grid
+            item={true}
+            container={true}
+            justify="center"
+            style={{ height: '90vh' }}
+          >
             <List />
           </Grid>
         </Grid>
