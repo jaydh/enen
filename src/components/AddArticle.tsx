@@ -46,7 +46,6 @@ class AddArticle extends React.Component<IProps, IState> {
       <div id="add-article" className="aligner">
         <form onSubmit={this.handleSubmit}>
           <Input
-            autoFocus={true}
             error={this.state.value.length > 0 && !this.state.valid}
             onChange={this.handleChange}
             value={this.state.value}
