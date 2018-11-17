@@ -73,13 +73,12 @@ class Article extends React.Component<IProps, IState> {
     return (
       <>
         <ListItem
-          button={true}
           divider={true}
           onMouseEnter={this.toggleShowRead}
           onMouseLeave={this.toggleShowRead}
         >
           <ExpansionPanel
-            className={classes.root}
+            className={article.completedOn ? classes.completed : classes.root}
             expanded={this.props.expanded}
             onChange={this.props.handler}
           >
@@ -163,6 +162,13 @@ const styles = {
     colorSecondary: '#ff0000',
     margin: 5
   },
+  completed: {
+    backgroundColor: '#F4ECD8',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    width: '100%'
+  },
+
   root: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',

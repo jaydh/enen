@@ -38,7 +38,9 @@ class AddArticle extends React.Component<IProps, IState> {
       .readText()
       .then(
         (text: any) =>
-          this.getValidationState(text) ? this.setState({ value: text }) : null
+          this.getValidationState(text)
+            ? this.setState({ value: text, valid: true })
+            : null
       );
   }
 
