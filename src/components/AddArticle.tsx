@@ -1,3 +1,4 @@
+import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Add from '@material-ui/icons/NoteAdd';
@@ -53,7 +54,9 @@ class AddArticle extends React.Component<IProps, IState> {
             placeholder="Save Article"
             endAdornment={
               <InputAdornment position="end">
-                <Add fontSize="small" />
+                <Button onClick={this.handleSubmit} size="small">
+                  <Add fontSize="small" />
+                </Button>
               </InputAdornment>
             }
             inputProps={{
