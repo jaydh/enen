@@ -22,29 +22,49 @@ database.settings(settings);
 export const auth = firebase.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-firebase.auth().onAuthStateChanged(user => {
+firebase.auth().onAuthStateChanged((user: any) => {
   if (user) {
     store.dispatch({ type: 'SIGN_IN', user });
     store.dispatch(getArticles());
   } else {
     store.dispatch({ type: 'SIGN_OUT' });
+    auth.signInAnonymously();
   }
 });
 
 export const uiConfig = {
   autoUpgradeAnonymousUsers: true,
   callbacks: {
-    signInFailure: (error: any) => {
+    signInFailure: async (error: any) => {
       if (error.code !== 'firebaseui/anonymous-upgrade-merge-conflict') {
         return Promise.resolve();
       }
+      // Store old data
+      const tempUser = store.getState().user;
+      const tempRef = database
+        .collection('userData')
+        .doc(tempUser.uid)
+        .collection('articles');
+      const data = await tempRef.get().then((querySnapshot: any) => {
+        const temp: any = [];
+        querySnapshot.forEach((doc: any) => {
+          temp.push(doc.data());
+          tempRef.doc(doc.id).delete();
+        });
+        return temp;
+      });
+
+      // The credential the user tried to sign in with.
       const cred = error.credential;
-      database.collection('userData').doc(cred);
-      // Copy data from anonymous user to permanent user and delete anonymous
-      // user.
-      // ...
-      // Finish sign-in after data is copied.
-      return firebase.auth().signInWithCredential(cred);
+      await firebase.auth().signInWithCredential(cred);
+      const uid = firebase.auth().currentUser!.uid;
+      const newRef = database
+        .collection('userData')
+        .doc(uid)
+        .collection('articles');
+
+      // Merge new data
+      return Promise.all(data.forEach((t: any) => newRef.doc(t.id).set(t)));
     },
     signInSuccessWithAuthResult: (authResult: any, redirectUrl: any) => {
       return false;
@@ -58,5 +78,4 @@ export const uiConfig = {
   signInFlow: 'redirect',
   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID]
 };
-
 export const ui = new firebaseui.auth.AuthUI(firebaseApp.auth());
