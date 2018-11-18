@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 import Login from '../components/Login';
 import User from '../components/User';
 import { auth } from '../firebase';
@@ -6,16 +7,25 @@ import { auth } from '../firebase';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
-class UserPage extends React.Component {
+interface IProps {
+  signedIn: boolean;
+  anon: boolean;
+}
+
+class UserPage extends React.Component<IProps> {
   public render() {
+    const { anon, signedIn } = this.props;
     return (
       <Grid container={true} justify="center" alignItems="center">
         <Grid item={true}>
           <User />
         </Grid>
-        <Grid item={true}>
-          <Login />
-        </Grid>
+        {!signedIn ||
+          (anon && (
+            <Grid item={true}>
+              <Login />
+            </Grid>
+          ))}
         <Grid item={true}>
           <Button onClick={this.handleLogoff}>Logout</Button>
         </Grid>
@@ -28,4 +38,8 @@ class UserPage extends React.Component {
   }
 }
 
-export default UserPage;
+const mapState = (state: any) => {
+  return { signedIn: state.user.signedIn, anon: state.user.isAnonymous };
+};
+
+export default connect(mapState)(UserPage);

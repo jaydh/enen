@@ -35,6 +35,7 @@ class List extends React.Component<IProps, IState> {
       <MaterialList className="aligner-item">
         {articles.map((t: IArticle) => (
           <Article
+            key={t.id}
             expanded={this.state.expandedPanel === t.id}
             handler={this.handleChange(t.id, this.state.expandedPanel === t.id)}
             id={t.id}

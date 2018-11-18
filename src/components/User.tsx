@@ -13,11 +13,11 @@ interface IProps {
 class User extends React.Component<IProps> {
   public render() {
     const { classes, user } = this.props;
-    const { signedIn, displayName, photoUrl } = user;
+    const { signedIn, displayName, photoUrl, isAnonymous } = user;
     const initials = displayName ? displayName.match(/\b\w/g).join('') : '';
     return (
       <Avatar className={classes.avatar} src={photoUrl}>
-        {signedIn ? initials : 'Anon'}
+        {signedIn && !isAnonymous ? initials : 'Anon'}
       </Avatar>
     );
   }

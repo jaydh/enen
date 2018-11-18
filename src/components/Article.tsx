@@ -50,21 +50,15 @@ class Article extends React.Component<IProps, IState> {
   public render() {
     const { article, classes } = this.props;
     const { progress } = article;
-
-    // tslint:disable:no-console
-    console.log(progress);
-
     const title =
       article.metadata && (article.metadata.title || article.metadata.ogTitle)
         ? article.metadata.title || article.metadata.ogTitle
         : article.link;
-
     const description = article.metadata
       ? (article.metadata.siteName || article.metadata.ogSiteName) +
         ' - ' +
         (article.metadata.ogDescrption || article.metadata.description)
       : '';
-
     const image =
       article.metadata && article.metadata.images
         ? article.metadata.images[0]

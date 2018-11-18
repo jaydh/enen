@@ -34,6 +34,18 @@ firebase.auth().onAuthStateChanged(user => {
 export const uiConfig = {
   autoUpgradeAnonymousUsers: true,
   callbacks: {
+    signInFailure: (error: any) => {
+      if (error.code !== 'firebaseui/anonymous-upgrade-merge-conflict') {
+        return Promise.resolve();
+      }
+      const cred = error.credential;
+      database.collection('userData').doc(cred);
+      // Copy data from anonymous user to permanent user and delete anonymous
+      // user.
+      // ...
+      // Finish sign-in after data is copied.
+      return firebase.auth().signInWithCredential(cred);
+    },
     signInSuccessWithAuthResult: (authResult: any, redirectUrl: any) => {
       return false;
     },
@@ -42,7 +54,7 @@ export const uiConfig = {
     },
 
     signInSuccessUrl: `https://${window.location.host}/`
-  },
+  } as any,
   signInFlow: 'redirect',
   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID]
 };
