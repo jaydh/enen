@@ -23,6 +23,7 @@
     "redux-thunk": "^2.3.0",
     "victory": "^31.0.0"
   },
+  "homepage": "https:enen.io",
   "scripts": {
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
@@ -38,7 +39,6 @@
     "@types/react-loadable": "^5.4.1",
     "@types/react-redux": "^6.0.9",
     "@types/react-router-dom": "^4.3.1",
-    "@types/react-virtualized": "^9.18.7",
     "@types/victory": "^0.9.21",
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",

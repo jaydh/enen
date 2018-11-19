@@ -1,6 +1,7 @@
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/functions';
 import * as firebaseui from 'firebaseui';
 import getArticles from './actions/getArticles';
 import { store } from './index';
@@ -16,6 +17,9 @@ const config = {
 
 export const provider = new firebase.auth.GoogleAuthProvider();
 const firebaseApp = firebase.initializeApp(config);
+const functions = firebase.functions();
+const deleteUser = functions.httpsCallable('deleteUser');
+
 export const database = firebaseApp.firestore();
 const settings = { timestampsInSnapshots: true };
 database.settings(settings);
@@ -41,18 +45,15 @@ export const uiConfig = {
       }
       // Store old data
       const tempUser = store.getState().user;
-      const tempRef = database
-        .collection('userData')
-        .doc(tempUser.uid)
-        .collection('articles');
-      const data = await tempRef.get().then((querySnapshot: any) => {
-        const temp: any = [];
-        querySnapshot.forEach((doc: any) => {
-          temp.push(doc.data());
-          tempRef.doc(doc.id).delete();
+      const tempRef = database.collection('userData').doc(tempUser.uid);
+      const data = await tempRef
+        .collection('articles')
+        .get()
+        .then((querySnapshot: any) => {
+          const temp: any = [];
+          querySnapshot.forEach((doc: any) => temp.push(doc.data()));
+          return temp;
         });
-        return temp;
-      });
 
       // The credential the user tried to sign in with.
       const cred = error.credential;
@@ -63,8 +64,10 @@ export const uiConfig = {
         .doc(uid)
         .collection('articles');
 
-      // Merge new data
-      return Promise.all(data.forEach((t: any) => newRef.doc(t.id).set(t)));
+      // Merge new data and then request delete
+      return Promise.all(data.map((t: any) => newRef.doc(t.id).set(t))).then(
+        () => deleteUser({ uid: tempUser.uid })
+      );
     },
     signInSuccessWithAuthResult: (authResult: any, redirectUrl: any) => {
       return false;

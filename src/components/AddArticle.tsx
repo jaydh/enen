@@ -40,7 +40,7 @@ class AddArticle extends React.Component<IProps, IState> {
         (text: any) =>
           this.getValidationState(text)
             ? this.setState({ value: text, valid: true })
-            : null
+            : Promise.resolve()
       );
   }
 

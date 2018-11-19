@@ -20,12 +20,11 @@ class UserPage extends React.Component<IProps> {
         <Grid item={true}>
           <User />
         </Grid>
-        {!signedIn ||
-          (anon && (
-            <Grid item={true}>
-              <Login />
-            </Grid>
-          ))}
+        {(!signedIn || anon) && (
+          <Grid item={true}>
+            <Login />
+          </Grid>
+        )}
         <Grid item={true}>
           <Button onClick={this.handleLogoff}>Logout</Button>
         </Grid>
