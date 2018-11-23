@@ -68,23 +68,24 @@ class Article extends React.Component<IProps, IState> {
       <>
         <ListItem
           divider={true}
+          className={classes.root}
           onMouseEnter={this.toggleShowRead}
           onMouseLeave={this.toggleShowRead}
         >
           <ExpansionPanel
-            className={article.completedOn ? classes.completed : classes.root}
+            className={article.completedOn ? classes.completed : classes.card}
             expanded={this.props.expanded}
             onChange={this.props.handler}
           >
             <ExpansionPanelSummary>
               <Grid container={true}>
-                <Grid item={true} xs={3} sm={2} md={1} lg={1}>
+                <Grid item={true} xs={4} sm={2} md={1} lg={1}>
                   <Avatar src={image} />
                 </Grid>
-                <Grid item={true} xs={6} sm={8} md={10} lg={10}>
+                <Grid item={true} xs={7} sm={8} md={10} lg={10}>
                   <ListItemText primary={title} secondary={description} />
                 </Grid>
-                <Grid item={true} xs={3} sm={2} md={1} lg={1}>
+                <Grid item={true} xs={1} sm={2} md={1} lg={1}>
                   <Fade in={this.state.showRead || this.props.expanded}>
                     <Link to={`/article/${article.id}`}>
                       <IconButton
@@ -156,16 +157,17 @@ const styles = {
     colorSecondary: '#ff0000',
     margin: 5
   },
+  card: {
+    textOverflow: 'ellipsis',
+    width: '100%'
+  },
   completed: {
     backgroundColor: '#F4ECD8',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     width: '100%'
   },
-
   root: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
     width: '100%'
   }
 };

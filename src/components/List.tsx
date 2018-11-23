@@ -2,8 +2,6 @@ import { isBefore } from 'date-fns';
 import * as Fuse from 'fuse.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import getArticles from '../actions/getArticles';
 import { IArticle } from '../reducers/articles';
 import Article from './Article';
 
@@ -12,7 +10,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 interface IProps {
   articles: IArticle[];
-  getArticles: () => void;
   classes: any;
 }
 
@@ -26,13 +23,10 @@ class List extends React.Component<IProps, IState> {
     this.state = { expandedPanel: '' };
     this.handleChange = this.handleChange.bind(this);
   }
-  public componentDidMount() {
-    this.props.getArticles();
-  }
   public render() {
     const { articles } = this.props;
     return (
-      <MaterialList className="aligner-item">
+      <MaterialList>
         {articles.map((t: IArticle) => (
           <Article
             key={t.id}
@@ -123,14 +117,8 @@ const mapStateToProps = (state: any) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators({ getArticles }, dispatch);
-
 const styles = {
   root: {}
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(List));
+export default connect(mapStateToProps)(withStyles(styles)(List));

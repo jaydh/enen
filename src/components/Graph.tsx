@@ -37,7 +37,7 @@ class Graph extends React.Component<IProps> {
         >
           <VictoryAxis dependentAxis={true} tickFormat={Object.keys(domains)} />
           <VictoryBar
-            labels={d => d.count}
+            labels={(d: any) => d.count}
             horizontal={true}
             data={data}
             y="count"

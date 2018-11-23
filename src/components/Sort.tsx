@@ -1,12 +1,16 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import addLabel from '../actions/addLabel';
 import setSort from '../actions/setSort';
 import toggleShowCompleted from '../actions/toggleShowCompleted';
+import Labels from './Labels';
 
 import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Divider from '@material-ui/core/Divider';
 import Grow from '@material-ui/core/Grow';
+import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Paper from '@material-ui/core/Paper';
@@ -23,6 +27,7 @@ interface IProps {
   classes: any;
   currentSort: string;
   showCompleted: boolean;
+  addLabel: (t: string) => void;
   setSort: (t: string) => void;
   toggleShowCompleted: () => void;
 }
@@ -30,16 +35,19 @@ interface IProps {
 interface IState {
   open: boolean;
   anchorEl: any;
+  newProject: string;
 }
 
 class Sort extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { open: false, anchorEl: undefined };
+    this.state = { open: false, anchorEl: undefined, newProject: '' };
     this.handleClose = this.handleClose.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
     this.handleRef = this.handleRef.bind(this);
     this.handleSort = this.handleSort.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   public render() {
@@ -105,6 +113,18 @@ class Sort extends React.Component<IProps, IState> {
                       {currentSort.startsWith('title') &&
                         (currentSort === 'title' ? <Down /> : <Up />)}
                     </MenuItem>
+                    <Divider />
+                    <Labels />
+                    <MenuItem>
+                      <form onSubmit={this.handleSubmit}>
+                        <Input
+                          onChange={this.handleChange}
+                          value={this.state.newProject}
+                          margin="dense"
+                          placeholder="Add Label"
+                        />
+                      </form>
+                    </MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
@@ -133,6 +153,17 @@ class Sort extends React.Component<IProps, IState> {
   private handleSort = (sort: string) => () => {
     this.props.setSort(sort);
   };
+  private handleChange(event: any) {
+    this.setState({
+      newProject: event.target.value
+    });
+  }
+
+  private handleSubmit(event: any) {
+    event.preventDefault();
+    this.props.addLabel(this.state.newProject);
+    this.setState({ newProject: '' });
+  }
 }
 
 const styles = {
@@ -153,7 +184,7 @@ const mapStateToProps = (state: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators({ setSort, toggleShowCompleted }, dispatch);
+  bindActionCreators({ addLabel, setSort, toggleShowCompleted }, dispatch);
 
 export default connect(
   mapStateToProps,

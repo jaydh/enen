@@ -1,5 +1,7 @@
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import ReactHTMLParser from 'react-html-parser';
+import ReactHTMLParser, { convertNodeToElement } from 'react-html-parser';
+import * as Loadable from 'react-loadable';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import updateBookmark from '../actions/updateBookmark';
@@ -8,11 +10,26 @@ import updateProgress from '../actions/updateProgress';
 import Loader from '../components/Loader';
 import { database } from '../firebase';
 
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+const Divider = Loadable({
+  loader: () => import('@material-ui/core/Divider'),
+  loading: Loader
+});
+const Grid = Loadable({
+  loader: () => import('@material-ui/core/Grid'),
+  loading: Loader
+});
+const Paper = Loadable({
+  loader: () => import('@material-ui/core/Paper'),
+  loading: Loader
+});
+const Typography = Loadable({
+  loader: () => import('@material-ui/core/Typography'),
+  loading: Loader
+});
+const Highlight = Loadable({
+  loader: () => import('react-highlight'),
+  loading: Loader
+});
 
 interface IProps {
   fontSize: number;
@@ -47,6 +64,7 @@ class ArticleView extends React.Component<IProps, IState> {
     this.getBookmark = this.getBookmark.bind(this);
     this.scrollToBookmark = this.scrollToBookmark.bind(this);
     this.getProgress = this.getProgress.bind(this);
+    this.transform = this.transform.bind(this);
   }
 
   public async componentDidMount() {
@@ -116,26 +134,36 @@ class ArticleView extends React.Component<IProps, IState> {
 
     return fetching || HTMLData ? (
       <Grid container={true} alignItems="center" justify="center">
-        <Paper elevation={10} className={classes.root}>
-          <Typography variant="title">{title}</Typography>
-          <Typography variant="subtitle1">{subtitle}</Typography>
-          <Divider className={classes.title} />
-          <div style={{ fontSize }}>
-            {fetching ? (
-              <Loader isLoading={fetching} />
-            ) : (
-              ReactHTMLParser(HTMLData, {
-                transform: (node: any, index: number) => {
-                  if (node.name === 'img') {
-                    node.attribs.class = 'img-fluid';
-                    return undefined;
-                  }
-                  return undefined;
-                }
-              })
-            )}
-          </div>
-        </Paper>
+        <Grid
+          item={true}
+          xs={12}
+          sm={11}
+          md={8}
+          lg={8}
+          className={classes.root}
+        >
+          <Paper elevation={10} className={classes.root}>
+            <Typography style={{ fontSize: fontSize + 10 }} variant="title">
+              {title}
+            </Typography>
+            <Typography style={{ fontSize: fontSize + 2 }} variant="subtitle1">
+              {subtitle}
+            </Typography>
+            <Divider className={classes.title} />
+            <div>
+              {fetching ? (
+                <Loader isLoading={fetching} />
+              ) : (
+                <div style={{ fontSize, lineHeight: '1.5' }}>
+                  {ReactHTMLParser(HTMLData, {
+                    decodeEntities: false,
+                    transform: this.transform
+                  })}
+                </div>
+              )}
+            </div>
+          </Paper>
+        </Grid>
       </Grid>
     ) : (
       <Grid container={true} alignItems="center" justify="center">
@@ -144,25 +172,75 @@ class ArticleView extends React.Component<IProps, IState> {
     );
   }
 
+  private transform(node: any, index: number) {
+    const { classes, fontSize } = this.props;
+    if (node.name && node.name.startsWith('h')) {
+      return (
+        <Typography
+          variant="h1"
+          gutterBottom={true}
+          style={{ fontSize: fontSize + 4 }}
+        >
+          {convertNodeToElement(node, index, this.transform)}
+        </Typography>
+      );
+    }
+    if (node.name === 'img') {
+      node.attribs.class = 'img-fluid';
+      return (
+        <Grid container={true} justify="center" className={classes.image}>
+          {convertNodeToElement(node, index, this.transform)}
+        </Grid>
+      );
+    }
+    if (node.name === 'p') {
+      return (
+        <Typography paragraph={true} style={{ fontSize }}>
+          {convertNodeToElement(node, index, this.transform)}
+        </Typography>
+      );
+    }
+    if (node.name === 'pre') {
+      return (
+        <div className={classes.pre}>
+          <Highlight>{convertNodeToElement(node)}</Highlight>
+        </div>
+      );
+    }
+    if (node.name === 'blockquote') {
+      return (
+        <div className={classes.quote}>
+          {node.children.map((t: any) => (
+            <Typography style={{ fontSize }}>
+              {t.data ? t.data : null}
+            </Typography>
+          ))}
+        </div>
+      );
+    }
+    return undefined;
+  }
+
   private getBookmark() {
     const elements = this.state.articleNodeList;
     const id = this.props.match.params.id;
-
-    for (let i = 0, max = elements.length; i < max; i++) {
-      const element = elements[i];
-      const rect = element.getBoundingClientRect();
-      if (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement!.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement!.clientWidth)
-      ) {
-        // Use previous element unless first element
-        const newBookmark = elements[i > 0 ? i - 1 : i].textContent;
-        this.props.updateBookmark(id, newBookmark);
-        return;
+    if (elements) {
+      for (let i = 0, max = elements.length; i < max; i++) {
+        const element = elements[i];
+        const rect = element.getBoundingClientRect();
+        if (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <=
+            (window.innerHeight || document.documentElement!.clientHeight) &&
+          rect.right <=
+            (window.innerWidth || document.documentElement!.clientWidth)
+        ) {
+          // Use previous element unless first element
+          const newBookmark = elements[i > 0 ? i - 1 : i].textContent;
+          this.props.updateBookmark(id, newBookmark);
+          return;
+        }
       }
     }
   }
@@ -213,7 +291,10 @@ const mapDispatchToProps = (dispatch: any) =>
   );
 
 const styles = {
-  root: { maxWidth: '75vw', padding: '2em 4em' },
+  image: { padding: '4em' },
+  pre: { borderLeft: '4px outset gray', margin: '2em', paddingLeft: '1em' },
+  quote: { borderLeft: '4px outset purple', margin: '2em', paddingLeft: '1em' },
+  root: { padding: '2em 4em' },
   title: { marginBottom: '4em' }
 };
 export default connect(

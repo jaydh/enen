@@ -34,14 +34,16 @@ class AddArticle extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     // Copy from clipboard if valid article
-    (navigator as any).clipboard
-      .readText()
-      .then(
-        (text: any) =>
-          this.getValidationState(text)
-            ? this.setState({ value: text, valid: true })
-            : Promise.resolve()
-      );
+    if ((navigator as any).clipboard.readText) {
+      (navigator as any).clipboard
+        .readText()
+        .then(
+          (text: any) =>
+            this.getValidationState(text)
+              ? this.setState({ value: text, valid: true })
+              : Promise.resolve()
+        );
+    }
   }
 
   public render() {

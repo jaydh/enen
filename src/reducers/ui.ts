@@ -1,7 +1,20 @@
 import produce from 'immer';
 
+interface IState {
+  fontSize: number;
+  showCompleted: boolean;
+  sort: string;
+  label?: string;
+  search?: string;
+  lastArticle?: string;
+}
+
 export default (
-  state = { showCompleted: false, sort: 'date', fontSize: 16 } as any,
+  state: IState = {
+    fontSize: 16,
+    showCompleted: false,
+    sort: 'date'
+  },
   action: any
 ) =>
   produce(state, draft => {
@@ -23,5 +36,7 @@ export default (
         break;
       case 'DECREASE_FONT_SIZE':
         draft.fontSize -= 1;
+      case 'SET_LABEL':
+        draft.label = action.label;
     }
   });

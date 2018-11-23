@@ -1,5 +1,6 @@
 import * as React from 'react';
-import Graph from '../components/Graph';
+import loader from '../helpers/loader';
+const Graph = loader(() => import('../components/Graph'));
 
 import Grid from '@material-ui/core/Grid';
 

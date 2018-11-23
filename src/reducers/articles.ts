@@ -11,7 +11,10 @@ export interface IArticle {
   progress?: number;
 }
 
-export default (state = { articles: [] as IArticle[] }, action: any) =>
+export default (
+  state = { articles: [] as IArticle[], labels: [] as any[] },
+  action: any
+) =>
   produce(state, draft => {
     switch (action.type) {
       case 'GET_ARTICLES_FULFILLED':
@@ -56,6 +59,12 @@ export default (state = { articles: [] as IArticle[] }, action: any) =>
           (t: IArticle) =>
             t.id === action.id ? { ...t, progress: action.progress } : t
         );
+        break;
+      case 'GET_LABELS_FULFILLED':
+        draft.labels = action.labels;
+        break;
+      case 'ADD_LABEL_FULFILLED':
+        draft.labels.push(action.label);
         break;
     }
   });

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import ArticleViewOptions from './ArticleViewOptions';
-
+import { withRouter } from 'react-router-dom';
+import loader from '../helpers/loader';
+const ArticleViewOptions = loader(() => import('./ArticleViewOptions'));
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import Fade from '@material-ui/core/Fade';
@@ -12,7 +13,6 @@ import List from '@material-ui/icons/List';
 import Person from '@material-ui/icons/Person';
 import Timeline from '@material-ui/icons/Timeline';
 
-import { withRouter } from 'react-router-dom';
 
 interface IProps {
   user: any;
@@ -77,11 +77,9 @@ const styles = {
   root: {
     backgroundColor: '#F4ECD8',
     borderTop: 'inset 1px',
-    bottom: 0,
-    height: '7vh',
+    height: '10vh',
     justifyContent: 'center',
     padding: 0,
-    position: 'fixed',
     width: '100%',
     zIndex: 100
   }

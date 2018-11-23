@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import Login from '../components/Login';
-import User from '../components/User';
+import loader from '../helpers/loader';
+
+const Login = loader(() => import('../components/Login'));
+const User = loader(() => import('../components/User'));
 import { auth } from '../firebase';
 
 import Button from '@material-ui/core/Button';

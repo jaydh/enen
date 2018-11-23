@@ -7,3 +7,5 @@ declare module '*.bmp'
 declare module '*.tiff'
 
 declare module 'react-html-parser'
+declare module 'react-highlight'
+declare module 'highlight.js'

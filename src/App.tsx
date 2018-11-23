@@ -1,9 +1,6 @@
 import * as React from 'react';
 import * as Loadable from 'react-loadable';
-import { connect } from 'react-redux';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { bindActionCreators } from 'redux';
-import getArticles from './actions/getArticles';
 import Loader from './components/Loader';
 import './index.css';
 
@@ -28,19 +25,18 @@ const Nav = Loadable({
   loading: Loader as any
 });
 
-class App extends React.Component<{ getArticles: () => void }> {
-  public componentDidMount() {
-    this.props.getArticles();
-  }
+class App extends React.Component {
   public render() {
     return (
       <Router>
         <>
-          <Route exact={true} path="/" component={ListMain} />
-          <Route path="/list" component={ListMain} />
-          <Route path="/me" component={UserPage} />
-          <Route path="/article/:id" component={ArticleView} />
-          <Route path="/stats" component={StatsMain} />
+          <div style={{ height: '90vh', overflow: 'auto' }}>
+            <Route exact={true} path="/" component={ListMain} />
+            <Route path="/list" component={ListMain} />
+            <Route path="/me" component={UserPage} />
+            <Route path="/article/:id" component={ArticleView} />
+            <Route path="/stats" component={StatsMain} />
+          </div>
           <Nav />
         </>
       </Router>
@@ -48,10 +44,4 @@ class App extends React.Component<{ getArticles: () => void }> {
   }
 }
 
-const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators({ getArticles }, dispatch);
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(App);
+export default App;

@@ -38,12 +38,17 @@ exports.getMetadata = functions.firestore
           loc.pathname.substr(0, loc.pathname.lastIndexOf('/') + 1)
       };
       const parsed = new Readability(uri, dom.window.document).parse();
+      console.log(parsed);
       return parsed.content;
     });
+    console.log(metadata, HTMLData);
+    cleanse(metadata);
+    cleanse(HTMLData);
+
     return change.ref.set(
       {
-        metadata,
-        HTMLData,
+        metadata: metadata,
+        HTMLData: HTMLData,
         fetching: false
       },
       { merge: true }
@@ -100,4 +105,23 @@ function deleteQueryBatch(query, batchSize, resolve, reject) {
       });
     })
     .catch(reject);
+}
+
+function cleanse(obj) {
+  Object.keys(obj).forEach(function(key) {
+    // Get this value and its type
+    const value = obj[key];
+    const type = typeof value;
+    if (type === 'object') {
+      // Recurse...
+      cleanse(value);
+      // ...and remove if now "empty" (NOTE: insert your definition of "empty" here)
+      if (!Object.keys(value).length) {
+        delete obj[key];
+      }
+    } else if (type === 'undefined') {
+      // Undefined, remove it
+      delete obj[key];
+    }
+  });
 }

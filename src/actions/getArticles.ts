@@ -17,7 +17,6 @@ const getArticlesRequested = (): IGetArticlesRequested => {
 };
 
 const getArticlesFulfilled = (articles: any): IGetArticlesFulfilled => {
-  // tslint:disable-next-line:no-console
   return { articles, type: 'GET_ARTICLES_FULFILLED' };
 };
 

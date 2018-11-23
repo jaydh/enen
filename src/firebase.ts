@@ -4,6 +4,7 @@ import 'firebase/firestore';
 import 'firebase/functions';
 import * as firebaseui from 'firebaseui';
 import getArticles from './actions/getArticles';
+import getLabels from './actions/getLabels';
 import { store } from './index';
 
 const config = {
@@ -30,6 +31,7 @@ firebase.auth().onAuthStateChanged((user: any) => {
   if (user) {
     store.dispatch({ type: 'SIGN_IN', user });
     store.dispatch(getArticles());
+    store.dispatch(getLabels());
   } else {
     store.dispatch({ type: 'SIGN_OUT' });
     auth.signInAnonymously();
