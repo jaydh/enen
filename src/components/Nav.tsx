@@ -13,14 +13,13 @@ import List from '@material-ui/icons/List';
 import Person from '@material-ui/icons/Person';
 import Timeline from '@material-ui/icons/Timeline';
 
-
 interface IProps {
   user: any;
   classes: any;
   history: any;
   location: any;
   match: any;
-  lastArticle: string;
+  lastArticleId?: string;
 }
 
 class LabelBottomNavigation extends React.Component<IProps> {
@@ -45,7 +44,7 @@ class LabelBottomNavigation extends React.Component<IProps> {
         <BottomNavigationAction label="List" value="/list" icon={<List />} />
         <BottomNavigationAction
           label="Article"
-          value={'/article/' + this.props.lastArticle}
+          value={'/article/' + this.props.lastArticleId}
           icon={<CollectionsBookmark />}
         />
         <BottomNavigationAction
@@ -58,7 +57,7 @@ class LabelBottomNavigation extends React.Component<IProps> {
           value="/me"
           icon={<Person />}
         />
-        <Fade in={value === '/article/' + this.props.lastArticle}>
+        <Fade in={value === '/article/' + this.props.lastArticleId}>
           <Toolbar className={classes.rightSide}>
             <ArticleViewOptions />
           </Toolbar>
@@ -87,7 +86,7 @@ const styles = {
 
 const mapStateToProps = (state: any) => {
   return {
-    lastArticle: state.ui.lastArticle,
+    lastArticleId: state.ui.lastArticle ? state.ui.lastArticle.id : undefined,
     user: state.user
   };
 };

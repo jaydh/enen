@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
@@ -7,7 +6,6 @@ import ExternalIcon from '@material-ui/icons/Launch';
 
 interface IProps {
   classes: any;
-  id: string;
   link: string;
 }
 
@@ -35,15 +33,6 @@ class FollowLink extends React.Component<IProps> {
   }
 }
 
-const mapStateToProps = (state: any, ownProps: { id: string }) => {
-  const article = state.articles.articles.find(
-    (t: any) => t.id === ownProps.id
-  );
-  return {
-    link: article ? article.link : undefined
-  };
-};
-
 const styles = {
   button: {
     colorPrimary: '#ff0000',
@@ -52,4 +41,4 @@ const styles = {
   }
 };
 
-export default connect(mapStateToProps)(withStyles(styles)(FollowLink));
+export default withStyles(styles)(FollowLink);

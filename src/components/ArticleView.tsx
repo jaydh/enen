@@ -9,11 +9,12 @@ import updateLastArticle from '../actions/updateLastArticle';
 import updateProgress from '../actions/updateProgress';
 import Loader from '../components/Loader';
 import { database } from '../firebase';
-
+import hash from '../helpers/hash';
 const Divider = Loadable({
   loader: () => import('@material-ui/core/Divider'),
   loading: Loader
 });
+import EmbeddedArticle from './EmbeddedArticle';
 const Grid = Loadable({
   loader: () => import('@material-ui/core/Grid'),
   loading: Loader
@@ -68,23 +69,21 @@ class ArticleView extends React.Component<IProps, IState> {
   }
 
   public async componentDidMount() {
-    // Remember last viewed article
-    if (this.props.match.params.id) {
-      this.props.updateLastArticle(this.props.match.params.id);
-    }
     const articleId = this.props.match.params.id;
     await database
       .collection('articleDB')
       .doc(articleId)
       .get()
-      .then((doc: any) =>
-        this.setState({
+      .then((doc: any) => {
+        // Remember last viewed article
+        this.props.updateLastArticle(doc.data());
+        return this.setState({
           HTMLData: doc.data() ? doc.data().HTMLData : undefined,
           fetching: false,
           link: doc.data() ? doc.data().link : undefined,
           metadata: doc.data() ? doc.data().metadata : undefined
-        })
-      );
+        });
+      });
 
     await database
       .collection('userData')
@@ -218,6 +217,21 @@ class ArticleView extends React.Component<IProps, IState> {
         </div>
       );
     }
+    if (
+      node.name === 'a' &&
+      node.children &&
+      node.children[0] &&
+      node.children[0].data
+    ) {
+      const id = hash(node.attribs.href);
+      return (
+        <EmbeddedArticle
+          title={node.children[0].data}
+          id={id.toString()}
+          link={node.attribs.href}
+        />
+      );
+    }
     return undefined;
   }
 
@@ -262,7 +276,7 @@ class ArticleView extends React.Component<IProps, IState> {
   }
 
   private getProgress() {
-    const h = document.documentElement;
+    const h = document.getElementById('main');
     if (h) {
       const id = this.props.match.params.id;
       const b = document.body;
@@ -272,6 +286,7 @@ class ArticleView extends React.Component<IProps, IState> {
         ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
       if (newProgress !== this.state.progress) {
         this.props.updateProgress(id, newProgress);
+        this.setState({ progress: newProgress });
       }
     }
   }

@@ -5,24 +5,29 @@ import SetFontSize from './actionDispatchers/SetFontSize';
 import ToggleCompleted from './actionDispatchers/ToggleCompleted';
 
 interface IProps {
-  id: string;
+  id?: string;
+  link?: string;
 }
 
 class Options extends React.Component<IProps> {
   public render() {
-    const { id } = this.props;
-    return (
+    const { id, link } = this.props;
+    return id && link ? (
       <>
-        <FollowLink id={id} />
+        <FollowLink link={link} />
         <ToggleCompleted id={id} />
         <SetFontSize />
       </>
-    );
+    ) : null;
   }
 }
 
 const mapStateToProps = (state: any) => {
-  return { id: state.ui.lastArticle };
+  const lastArticle = state.ui.lastArticle;
+  return {
+    id: lastArticle ? lastArticle.id : undefined,
+    link: lastArticle ? lastArticle.link : undefined
+  };
 };
 
 export default connect(mapStateToProps)(Options);

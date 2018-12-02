@@ -20,7 +20,7 @@ export default (
   produce(state, draft => {
     switch (action.type) {
       case 'UPDATE_LAST_ARTICLE':
-        draft.lastArticle = action.id;
+        draft.lastArticle = action.article;
         break;
       case 'SET_SEARCH':
         draft.search = action.value;

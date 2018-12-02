@@ -15,45 +15,62 @@ const config = {
 };
 admin.initializeApp(config);
 
+const getMetadata = async (id: string, link: string) => {
+  const ref = admin
+    .firestore()
+    .collection('articleDB')
+    .doc(id);
+  const data = await ref.get().then((doc: any) => doc.data());
+  console.log(data);
+  if (data && data.HTMLData && data.metadata) {
+    return Promise.resolve();
+  }
+  await ref.set({ fetching: true }, { merge: true });
+
+  const metadata = await new Promise(function (resolve, reject) {
+    scrape(link, (err, meta) => resolve(meta));
+  });
+  const HTMLData = await JSDOM.fromURL(link, {}).then(dom => {
+    const loc = dom.window.location;
+    const uri = {
+      spec: loc.href,
+      host: loc.host,
+      prePath: loc.protocol + '//' + loc.host,
+      scheme: loc.protocol.substr(0, loc.protocol.indexOf(':')),
+      pathBase:
+        loc.protocol +
+        '//' +
+        loc.host +
+        loc.pathname.substr(0, loc.pathname.lastIndexOf('/') + 1)
+    };
+    const parsed = new Readability(uri, dom.window.document).parse();
+    console.log(parsed);
+    return parsed ? parsed.content : null;
+  });
+  console.log(metadata, HTMLData);
+  if (metadata) cleanse(metadata);
+  if (HTMLData) cleanse(HTMLData);
+
+  return ref.set(
+    {
+      metadata: metadata,
+      HTMLData: HTMLData,
+      fetching: false
+    },
+    { merge: true }
+  );
+};
+
 exports.getMetadata = functions.firestore
   .document('articleDB/{id}')
   .onCreate(async (change, context) => {
-    await change.ref.set({ fetching: true }, { merge: true });
-
-    const link = change.data().link;
-    const metadata = await new Promise(function(resolve, reject) {
-      scrape(link, (err, meta) => resolve(meta));
-    });
-    const HTMLData = await JSDOM.fromURL(link, {}).then(dom => {
-      const loc = dom.window.location;
-      const uri = {
-        spec: loc.href,
-        host: loc.host,
-        prePath: loc.protocol + '//' + loc.host,
-        scheme: loc.protocol.substr(0, loc.protocol.indexOf(':')),
-        pathBase:
-          loc.protocol +
-          '//' +
-          loc.host +
-          loc.pathname.substr(0, loc.pathname.lastIndexOf('/') + 1)
-      };
-      const parsed = new Readability(uri, dom.window.document).parse();
-      console.log(parsed);
-      return parsed.content;
-    });
-    console.log(metadata, HTMLData);
-    cleanse(metadata);
-    cleanse(HTMLData);
-
-    return change.ref.set(
-      {
-        metadata: metadata,
-        HTMLData: HTMLData,
-        fetching: false
-      },
-      { merge: true }
-    );
+    return getMetadata(context.params.id, change.data().link);
   });
+
+exports.getMetadataOnDemand = functions.https.onCall((data, context) => {
+  console.log(data, context);
+  return getMetadata(data.id, data.link);
+});
 
 exports.deleteUser = functions.https.onCall((data, context) => {
   const userRef = admin
@@ -108,7 +125,7 @@ function deleteQueryBatch(query, batchSize, resolve, reject) {
 }
 
 function cleanse(obj) {
-  Object.keys(obj).forEach(function(key) {
+  Object.keys(obj).forEach(function (key) {
     // Get this value and its type
     const value = obj[key];
     const type = typeof value;

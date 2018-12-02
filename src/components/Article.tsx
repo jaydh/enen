@@ -8,18 +8,18 @@ import FollowLink from './actionDispatchers/FollowLink';
 import ToggleCompleted from './actionDispatchers/ToggleCompleted';
 
 import Avatar from '@material-ui/core/Avatar';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-
-import IconButton from '@material-ui/core/IconButton';
 import ReadIcon from '@material-ui/icons/ChromeReaderMode';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -54,11 +54,22 @@ class Article extends React.Component<IProps, IState> {
       article.metadata && (article.metadata.title || article.metadata.ogTitle)
         ? article.metadata.title || article.metadata.ogTitle
         : article.link;
-    const description = article.metadata
-      ? (article.metadata.siteName || article.metadata.ogSiteName) +
-        ' - ' +
-        (article.metadata.ogDescrption || article.metadata.description)
-      : '';
+    // tslint:disable:no-console
+    console.log(title);
+    const siteName =
+      article.metadata &&
+      (article.metadata.siteName || article.metadata.ogSiteName);
+    const description =
+      article.metadata &&
+      (article.metadata.ogDescrption || article.metadata.description);
+
+    const secondary =
+      siteName && description
+        ? `${siteName} - ${description}`
+        : siteName
+        ? siteName
+        : description;
+
     const image =
       article.metadata && article.metadata.images
         ? article.metadata.images[0]
@@ -80,10 +91,13 @@ class Article extends React.Component<IProps, IState> {
             <ExpansionPanelSummary>
               <Grid container={true}>
                 <Grid item={true} xs={4} sm={2} md={1} lg={1}>
+                  {article.fetching && <CircularProgress />}
                   <Avatar src={image} />
                 </Grid>
                 <Grid item={true} xs={7} sm={8} md={10} lg={10}>
-                  <ListItemText primary={title} secondary={description} />
+                  {description && (
+                    <ListItemText primary={title} secondary={secondary} />
+                  )}
                 </Grid>
                 <Grid item={true} xs={1} sm={2} md={1} lg={1}>
                   <Fade in={this.state.showRead || this.props.expanded}>
@@ -98,13 +112,13 @@ class Article extends React.Component<IProps, IState> {
                     </Link>
                   </Fade>
                 </Grid>
-                <Grid item={true} xs={12} sm={12} md={12} lg={12}>
-                  {progress && (
+                {progress && progress !== 0 && (
+                  <Grid item={true} xs={12} sm={12} md={12} lg={12}>
                     <div style={{ width: '100%' }}>
                       <LinearProgress variant="determinate" value={progress} />
                     </div>
-                  )}
-                </Grid>
+                  </Grid>
+                )}
               </Grid>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
@@ -116,7 +130,7 @@ class Article extends React.Component<IProps, IState> {
               </Typography>
               <Grid container={true} alignItems="flex-end" justify="flex-end">
                 <ToggleCompleted id={article.id} />
-                <FollowLink id={article.id} />
+                <FollowLink link={article.link} />
                 <IconButton
                   className={classes.button}
                   color="secondary"

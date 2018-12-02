@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import loader from '../helpers/loader';
-const AddArticle = loader(() => import('../components/AddArticle'));
+const AddArticle = loader(() => import('../components/AddArticleForm'));
 const List = loader(() => import('../components/List'));
 const Search = loader(() => import('../components/Search'));
 const Sort = loader(() => import('../components/Sort'));

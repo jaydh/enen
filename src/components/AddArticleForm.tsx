@@ -1,7 +1,5 @@
-import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import Add from '@material-ui/icons/NoteAdd';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -9,6 +7,7 @@ import addArticle from '../actions/addArticle';
 import hash from '../helpers/hash';
 import parseUri from '../helpers/parseURI';
 import { IArticle } from '../reducers/articles';
+import AddArticle from './actionDispatchers/AddArticle';
 
 interface IProps {
   addArticle: (t: string) => void;
@@ -22,7 +21,7 @@ interface IState {
 
 // ask db to fetch article in background
 
-class AddArticle extends React.Component<IProps, IState> {
+class AddArticleForm extends React.Component<IProps, IState> {
   constructor(props: any) {
     super(props);
     this.state = { valid: false, value: '' };
@@ -37,11 +36,10 @@ class AddArticle extends React.Component<IProps, IState> {
     if ((navigator as any).clipboard.readText) {
       (navigator as any).clipboard
         .readText()
-        .then(
-          (text: any) =>
-            this.getValidationState(text)
-              ? this.setState({ value: text, valid: true })
-              : Promise.resolve()
+        .then((text: any) =>
+          this.getValidationState(text)
+            ? this.setState({ value: text, valid: true })
+            : Promise.resolve()
         );
     }
   }
@@ -58,9 +56,7 @@ class AddArticle extends React.Component<IProps, IState> {
             placeholder="Save Article"
             endAdornment={
               <InputAdornment position="end">
-                <Button onClick={this.handleSubmit} size="small">
-                  <Add fontSize="small" />
-                </Button>
+                <AddArticle link={this.state.value} />
               </InputAdornment>
             }
             inputProps={{
@@ -100,11 +96,9 @@ const mapStateToProps = (state: any) => {
     articles: state.articles
   };
 };
-
-const mapDispatchToProps = (dispatch: any) =>
+const mapDispatch = (dispatch: any) =>
   bindActionCreators({ addArticle }, dispatch);
-
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
-)(AddArticle);
+  mapDispatch
+)(AddArticleForm);

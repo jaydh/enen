@@ -1,3 +1,3 @@
-export default (id: string) => {
-  return { type: 'UPDATE_LAST_ARTICLE', id };
+export default (article: any) => {
+  return { type: 'UPDATE_LAST_ARTICLE', article };
 };

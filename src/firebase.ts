@@ -20,6 +20,9 @@ export const provider = new firebase.auth.GoogleAuthProvider();
 const firebaseApp = firebase.initializeApp(config);
 const functions = firebase.functions();
 const deleteUser = functions.httpsCallable('deleteUser');
+export const requestServerParse = functions.httpsCallable(
+  'getMetadataOnDemand'
+);
 
 export const database = firebaseApp.firestore();
 const settings = { timestampsInSnapshots: true };
