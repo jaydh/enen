@@ -54,8 +54,6 @@ class Article extends React.Component<IProps, IState> {
       article.metadata && (article.metadata.title || article.metadata.ogTitle)
         ? article.metadata.title || article.metadata.ogTitle
         : article.link;
-    // tslint:disable:no-console
-    console.log(title);
     const siteName =
       article.metadata &&
       (article.metadata.siteName || article.metadata.ogSiteName);
@@ -67,8 +65,8 @@ class Article extends React.Component<IProps, IState> {
       siteName && description
         ? `${siteName} - ${description}`
         : siteName
-        ? siteName
-        : description;
+          ? siteName
+          : description;
 
     const image =
       article.metadata && article.metadata.images
@@ -95,9 +93,7 @@ class Article extends React.Component<IProps, IState> {
                   <Avatar src={image} />
                 </Grid>
                 <Grid item={true} xs={7} sm={8} md={10} lg={10}>
-                  {description && (
-                    <ListItemText primary={title} secondary={secondary} />
-                  )}
+                  <ListItemText primary={title} secondary={secondary} />
                 </Grid>
                 <Grid item={true} xs={1} sm={2} md={1} lg={1}>
                   <Fade in={this.state.showRead || this.props.expanded}>
@@ -112,13 +108,17 @@ class Article extends React.Component<IProps, IState> {
                     </Link>
                   </Fade>
                 </Grid>
-                {progress && progress !== 0 && (
-                  <Grid item={true} xs={12} sm={12} md={12} lg={12}>
-                    <div style={{ width: '100%' }}>
-                      <LinearProgress variant="determinate" value={progress} />
-                    </div>
-                  </Grid>
-                )}
+                {progress &&
+                  progress !== 0 && (
+                    <Grid item={true} xs={12} sm={12} md={12} lg={12}>
+                      <div style={{ width: '100%' }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={progress}
+                        />
+                      </div>
+                    </Grid>
+                  )}
               </Grid>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
