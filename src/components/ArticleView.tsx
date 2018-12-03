@@ -154,7 +154,7 @@ class ArticleView extends React.Component<IProps, IState> {
                 <Loader isLoading={fetching} />
               ) : (
                 <div style={{ fontSize, lineHeight: '1.5' }}>
-                  {ReactHTMLParser(HTMLData, {
+                  {ReactHTMLParser(HTMLData!.replace(/(&nbsp;)*/g, ''), {
                     decodeEntities: false,
                     transform: this.transform
                   })}

@@ -49,7 +49,7 @@ class Embedded extends React.Component<IProps, IState> {
     const { title, link, fontSize, classes } = this.props;
     const { show, fetching, HTMLData } = this.state;
     return (
-      <>
+      <span>
         <a href={link}>{title}</a>
         <IconButton onClick={this.handleExpand} color="primary">
           <Read />
@@ -73,7 +73,7 @@ class Embedded extends React.Component<IProps, IState> {
             </Paper>
           }
         />
-      </>
+      </span>
     );
   }
 
