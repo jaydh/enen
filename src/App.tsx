@@ -25,6 +25,10 @@ const Nav = Loadable({
   loader: () => import('./components/Nav'),
   loading: Loader as any
 });
+const About = Loadable({
+  loader: () => import('./components/About'),
+  loading: Loader as any
+});
 
 class App extends React.Component {
   public render() {
@@ -38,6 +42,7 @@ class App extends React.Component {
               <Route path="/me" component={UserPage} />
               <Route path="/article/:id" component={ArticleView} />
               <Route path="/stats" component={StatsMain} />
+              <Route path="/about" component={About} />
             </ScrollToTop>
           </div>
           <Nav />
