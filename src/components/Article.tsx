@@ -32,7 +32,7 @@ interface IProps {
   classes: any;
   expanded: boolean;
   handler: (event: any, expanded: any) => void;
-  deleteArticle: (id: string) => void;
+  deleteArticle: (id: string) => Promise<void>;
 }
 
 interface IState {
@@ -65,8 +65,8 @@ class Article extends React.Component<IProps, IState> {
       siteName && description
         ? `${siteName} - ${description}`
         : siteName
-          ? siteName
-          : description;
+        ? siteName
+        : description;
 
     const image =
       article.metadata && article.metadata.images
@@ -108,17 +108,13 @@ class Article extends React.Component<IProps, IState> {
                     </Link>
                   </Fade>
                 </Grid>
-                {progress &&
-                  progress !== 0 && (
-                    <Grid item={true} xs={12} sm={12} md={12} lg={12}>
-                      <div style={{ width: '100%' }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={progress}
-                        />
-                      </div>
-                    </Grid>
-                  )}
+                {progress && progress !== 0 && (
+                  <Grid item={true} xs={12} sm={12} md={12} lg={12}>
+                    <div style={{ width: '100%' }}>
+                      <LinearProgress variant="determinate" value={progress} />
+                    </div>
+                  </Grid>
+                )}
               </Grid>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>

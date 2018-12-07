@@ -27,7 +27,7 @@ interface IProps {
   classes: any;
   currentSort: string;
   showCompleted: boolean;
-  addLabel: (t: string) => void;
+  addLabel: (t: string) => Promise<void>;
   setSort: (t: string) => void;
   toggleShowCompleted: () => void;
 }

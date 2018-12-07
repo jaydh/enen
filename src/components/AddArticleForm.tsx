@@ -10,7 +10,7 @@ import { IArticle } from '../reducers/articles';
 import AddArticle from './actionDispatchers/AddArticle';
 
 interface IProps {
-  addArticle: (t: string) => void;
+  addArticle: (t: string) => Promise<void>;
   articles: IArticle[];
 }
 
@@ -91,11 +91,10 @@ class AddArticleForm extends React.Component<IProps, IState> {
     if (!document.hidden && (navigator as any).clipboard.readText) {
       (navigator as any).clipboard
         .readText()
-        .then(
-          (text: any) =>
-            this.getValidationState(text)
-              ? this.setState({ value: text, valid: true })
-              : Promise.resolve()
+        .then((text: any) =>
+          this.getValidationState(text)
+            ? this.setState({ value: text, valid: true })
+            : Promise.resolve()
         );
     }
   }
