@@ -1,36 +1,77 @@
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
 import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
 import Typo from '@material-ui/core/Typography';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import bookmark from '../static/bookmark.gif';
+import embed from '../static/embed.gif';
+import save from '../static/save.gif';
 
-class About extends React.Component {
+interface IProps {
+  classes: any;
+}
+
+class About extends React.Component<IProps> {
   public render() {
+    const { classes } = this.props;
     return (
       <Grid container={true} justify="center">
-        <Grid item={true}>
-          <Typo variant="h3">Easily add articles for later</Typo>
-          <img
-            style={{ width: '60vw' }}
-            src="https://firebasestorage.googleapis.com/v0/b/enen-c3566.appspot.com/o/add%20article.gif?alt=media&token=d1d744c3-dadd-486c-ae93-939abe6e7c27"
-          />
+        <Grid
+          className={classes.item}
+          xs={12}
+          sm={12}
+          md={10}
+          lg={8}
+          item={true}
+        >
+          <Card className={classes.card}>
+            <CardMedia className={classes.media} image={save} />
+            <CardContent>
+              <Typo gutterBottom={true} variant="h5" component="h2">
+                Easily Save Articles
+              </Typo>
+            </CardContent>
+          </Card>
         </Grid>
-        <Grid item={true}>
-          <Typo variant="h3">
-            Automatic bookmarks for synced reading between devices
-          </Typo>
-          <img
-            style={{ width: '60vw' }}
-            src="https://firebasestorage.googleapis.com/v0/b/enen-c3566.appspot.com/o/bookmark.gif?alt=media&token=618551f0-783a-4301-8f9a-79bca11d7921"
-          />
+        <Grid
+          className={classes.item}
+          xs={12}
+          sm={12}
+          md={10}
+          lg={8}
+          item={true}
+        >
+          <Card className={classes.card}>
+            <CardMedia className={classes.media} image={bookmark} />
+            <CardContent>
+              <Typo gutterBottom={true} variant="h5" component="h2">
+                Automatic bookmarks for synced reading between devices
+              </Typo>
+            </CardContent>
+          </Card>
         </Grid>
-        <Grid item={true}>
-          <Typo variant="h3">Embedded reader for skimming linked articles</Typo>
-          <img
-            style={{ width: '60vw' }}
-            src="https://firebasestorage.googleapis.com/v0/b/enen-c3566.appspot.com/o/embed.gif?alt=media&token=37dab8e2-bab4-44b7-b0ca-e42ed250df19"
-          />
+        <Grid
+          className={classes.item}
+          xs={12}
+          sm={12}
+          md={10}
+          lg={8}
+          item={true}
+        >
+          <Card className={classes.card}>
+            <CardMedia className={classes.media} image={embed} />
+            <CardContent>
+              <Typo gutterBottom={true} variant="h5" component="h2">
+                Embedded reader for skimming linked articles
+              </Typo>
+            </CardContent>
+          </Card>
         </Grid>
+
         <Grid
           item={true}
           container={true}
@@ -59,4 +100,18 @@ class About extends React.Component {
     );
   }
 }
-export default About;
+const styles = {
+  card: {
+    minWidth: 275
+  },
+  item: {
+    padding: '2em'
+  },
+  media: {
+    minHeight: 600
+  },
+  title: {
+    fontSize: 14
+  }
+};
+export default withStyles(styles)(About);
