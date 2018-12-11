@@ -136,7 +136,7 @@ class ArticleView extends React.Component<IProps, IState> {
         <Grid
           item={true}
           xs={12}
-          sm={11}
+          sm={12}
           md={8}
           lg={8}
           className={classes.root}
@@ -309,7 +309,7 @@ const styles = {
   image: { padding: '4em' },
   pre: { borderLeft: '4px outset gray', margin: '2em', paddingLeft: '1em' },
   quote: { borderLeft: '4px outset purple', margin: '2em', paddingLeft: '1em' },
-  root: { padding: '2em 4em' },
+  root: { padding: '2em 1em' },
   title: { marginBottom: '4em' }
 };
 export default connect(
