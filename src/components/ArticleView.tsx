@@ -8,7 +8,7 @@ import updateBookmark from '../actions/updateBookmark';
 import updateLastArticle from '../actions/updateLastArticle';
 import updateProgress from '../actions/updateProgress';
 import Loader from '../components/Loader';
-import { database } from '../firebase';
+import { database, requestServerParse } from '../firebase';
 import hash from '../helpers/hash';
 const Divider = Loadable({
   loader: () => import('@material-ui/core/Divider'),
@@ -50,7 +50,8 @@ interface IState {
   metadata?: any;
   progress?: number;
   fetching: boolean;
-  articleNodeList: any;
+  articleLinks: HTMLAnchorElement[];
+  articleNodeList: Element[];
   intervalId: any;
 }
 
@@ -58,7 +59,8 @@ class ArticleView extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      articleNodeList: null,
+      articleLinks: [],
+      articleNodeList: [],
       fetching: true,
       intervalId: null
     };
@@ -66,6 +68,7 @@ class ArticleView extends React.Component<IProps, IState> {
     this.scrollToBookmark = this.scrollToBookmark.bind(this);
     this.getProgress = this.getProgress.bind(this);
     this.transform = this.transform.bind(this);
+    this.getArticlesInView = this.getArticlesInView.bind(this);
   }
 
   public async componentDidMount() {
@@ -100,13 +103,16 @@ class ArticleView extends React.Component<IProps, IState> {
     const intervalId = setInterval(() => {
       this.getBookmark();
       this.getProgress();
+      this.getArticlesInView();
     }, 20000);
 
     // Find all nodes in page with textContent
     await this.setState({
+      articleLinks: Array.from(document.querySelectorAll('div.page a')),
       articleNodeList: Array.from(
         document.querySelectorAll('div.page p')
       ).filter(el => el.textContent),
+
       intervalId
     });
     this.scrollToBookmark();
@@ -130,7 +136,6 @@ class ArticleView extends React.Component<IProps, IState> {
     const subtitle = `${siteName ? siteName : ''} ${
       description ? '-' + description : ''
     }`;
-
     return fetching || HTMLData ? (
       <Grid container={true} alignItems="center" justify="center">
         <Grid
@@ -238,25 +243,47 @@ class ArticleView extends React.Component<IProps, IState> {
   private getBookmark() {
     const elements = this.state.articleNodeList;
     const id = this.props.match.params.id;
+
     if (elements) {
       for (let i = 0, max = elements.length; i < max; i++) {
         const element = elements[i];
-        const rect = element.getBoundingClientRect();
-        if (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight || document.documentElement!.clientHeight) &&
-          rect.right <=
-            (window.innerWidth || document.documentElement!.clientWidth)
-        ) {
+        if (this.elementInView(element)) {
           // Use previous element unless first element
           const newBookmark = elements[i > 0 ? i - 1 : i].textContent;
-          this.props.updateBookmark(id, newBookmark);
-          return;
+          if (newBookmark) {
+            this.props.updateBookmark(id, newBookmark);
+          }
         }
       }
     }
+  }
+
+  private getArticlesInView() {
+    const targets = this.state.articleLinks.filter((e: HTMLAnchorElement) =>
+      this.elementInView(e)
+    );
+    targets.forEach(async (e: HTMLAnchorElement) => {
+      const id = hash(e.href).toString();
+      const data = await database
+        .collection('articleDB')
+        .doc(id)
+        .get()
+        .then((doc: any) => doc.data());
+      if (!data) {
+        requestServerParse({ id, link: e.href });
+      }
+    });
+  }
+
+  private elementInView(e: Element) {
+    const rect = e.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement!.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement!.clientWidth)
+    );
   }
 
   private scrollToBookmark() {

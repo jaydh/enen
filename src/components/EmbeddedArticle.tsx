@@ -87,18 +87,28 @@ class Embedded extends React.Component<IProps, IState> {
     const { id, link } = this.props;
     // Document accessor for id must be string
     // tslint:disable:no-empty
-    requestServerParse({ id: id.toString(), link });
-    const ref = database.collection('articleDB').doc(id);
-    const unsubscribe = ref.onSnapshot(() => {});
-    ref.onSnapshot((doc: any) => {
-      const data = doc.data();
-      if (data) {
-        this.setState({ HTMLData: data.HTMLData, fetching: data.fetching });
-        if (data.HTMLData && !data.fetching) {
-          unsubscribe();
+    const data = await database
+      .collection('articleDB')
+      .doc(id)
+      .get()
+      .then((doc: any) => doc.data());
+    if (data) {
+      this.setState({ HTMLData: data.HTMLData, fetching: data.fetching });
+    } else {
+      requestServerParse({ id: id.toString(), link });
+      const ref = database.collection('articleDB').doc(id);
+      const unsubscribe = ref.onSnapshot(() => {});
+      ref.onSnapshot((doc: any) => {
+        // tslint:disable:no-shadowed-variable
+        const data = doc.data();
+        if (data) {
+          this.setState({ HTMLData: data.HTMLData, fetching: data.fetching });
+          if (data.HTMLData && !data.fetching) {
+            unsubscribe();
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   private transform(node: any, index: number) {
