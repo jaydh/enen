@@ -10,7 +10,7 @@ import { IArticle } from '../reducers/articles';
 import AddArticle from './actionDispatchers/AddArticle';
 
 interface IProps {
-  addArticle: (t: string) => Promise<void>;
+  addArticle: (t: string) => (dispatch: any, getState: any) => Promise<void>;
   articles: IArticle[];
 }
 

@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import addArticle from '../../actions/addArticle';
 
 interface IProps {
-  addArticle: (t: string) => Promise<void>;
+  addArticle: (t: string) => (dispatch: any, getState: any) => Promise<void>;
   link: string;
 }
 

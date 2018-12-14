@@ -32,7 +32,9 @@ interface IProps {
   classes: any;
   expanded: boolean;
   handler: (event: any, expanded: any) => void;
-  deleteArticle: (id: string) => Promise<void>;
+  deleteArticle: (
+    id: string
+  ) => (dispatch: any, getState: any) => Promise<void>;
 }
 
 interface IState {
