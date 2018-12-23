@@ -9,6 +9,7 @@
   },
   "jsRules": {
     "object-literal-sort-keys": false, //Disable for javascript
-    "no-bitwise": false
+    "no-bitwise": false,
+    "no-useless-escape": false
   }
 }

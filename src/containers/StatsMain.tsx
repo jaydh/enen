@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import loader from '../helpers/loader';
 const Graph = loader(() => import('../components/Graph'));
 

@@ -24,7 +24,7 @@ class Graph extends React.Component<IProps> {
   public render() {
     const { domains, completionDates } = this.props;
     const data = Object.keys(domains).map((key: string) => {
-      return { domain: key, count: domains[key] };
+      return { domain: key, count: domains[key] as any };
     });
     const today = new Date();
     let runner = new Date();

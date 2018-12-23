@@ -1,23 +1,24 @@
+// eslint-disable-next-line
 const options = {
   strictMode: false,
   key: [
-    'source',
-    'protocol',
-    'authority',
-    'userInfo',
-    'user',
-    'password',
-    'host',
-    'port',
-    'relative',
-    'path',
-    'directory',
-    'file',
-    'query',
-    'anchor'
+    "source",
+    "protocol",
+    "authority",
+    "userInfo",
+    "user",
+    "password",
+    "host",
+    "port",
+    "relative",
+    "path",
+    "directory",
+    "file",
+    "query",
+    "anchor"
   ],
   q: {
-    name: 'queryKey',
+    name: "queryKey",
     parser: /(?:^|&)([^&=]*)=?([^&]*)/g
   },
   parser: {
@@ -28,12 +29,12 @@ const options = {
 
 export default function parseUri(str) {
   let o = options;
-  let m = o.parser[o.strictMode ? 'strict' : 'loose'].exec(str);
+  let m = o.parser[o.strictMode ? "strict" : "loose"].exec(str);
   let uri = {};
   let i = 14;
 
   while (i--) {
-    uri[o.key[i]] = m[i] || '';
+    uri[o.key[i]] = m[i] || "";
   }
 
   uri[o.q.name] = {};

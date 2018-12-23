@@ -1,13 +1,13 @@
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import addArticle from '../actions/addArticle';
-import hash from '../helpers/hash';
-import parseUri from '../helpers/parseURI';
-import { IArticle } from '../reducers/articles';
-import AddArticle from './actionDispatchers/AddArticle';
+import Input from "@material-ui/core/Input";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import * as React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import addArticle from "../actions/addArticle";
+import hash from "../helpers/hash";
+import parseUri from "../helpers/parseURI";
+import { IArticle } from "../reducers/articles";
+import AddArticle from "./actionDispatchers/AddArticle";
 
 interface IProps {
   addArticle: (t: string) => (dispatch: any, getState: any) => Promise<void>;
@@ -24,7 +24,7 @@ interface IState {
 class AddArticleForm extends React.Component<IProps, IState> {
   constructor(props: any) {
     super(props);
-    this.state = { valid: false, value: '' };
+    this.state = { valid: false, value: "" };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -33,11 +33,11 @@ class AddArticleForm extends React.Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    document.addEventListener('visibilitychange', this.readClipboard, false);
+    document.addEventListener("visibilitychange", this.readClipboard, false);
   }
 
   public componentWillUnmount() {
-    document.removeEventListener('visibilitychange', this.readClipboard, false);
+    document.removeEventListener("visibilitychange", this.readClipboard, false);
   }
 
   public render() {
@@ -56,7 +56,7 @@ class AddArticleForm extends React.Component<IProps, IState> {
               </InputAdornment>
             }
             inputProps={{
-              'aria-label': 'Save article'
+              "aria-label": "Save article"
             }}
           />
         </form>
@@ -75,13 +75,13 @@ class AddArticleForm extends React.Component<IProps, IState> {
     event.preventDefault();
     this.props.addArticle(this.state.value);
     this.state.valid
-      ? this.setState({ value: '', valid: false })
-      : alert('invalid hyperlink');
+      ? this.setState({ value: "", valid: false })
+      : alert("invalid hyperlink");
   }
 
   private getValidationState(value: string) {
     const parse = parseUri(value) as any;
-    const exists = this.props.articles[hash(value)];
+    const exists = this.props.articles[hash(value) as number];
     // Checks if valid hyperlink
     return !exists && parse.authority && parse.protocol ? true : false;
   }
