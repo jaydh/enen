@@ -1,5 +1,6 @@
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { withStyles } from '@material-ui/core';
 import Filter from '@material-ui/icons/FilterList';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -9,9 +10,10 @@ import setSearch from '../actions/setSearch';
 interface IProps {
   value: string;
   setSearch: (t: string) => void;
+  classes: any;
 }
 
-// ask db to fetch article in background
+const styles = { root: {} };
 
 class Search extends React.Component<IProps> {
   constructor(props: any) {
@@ -20,25 +22,25 @@ class Search extends React.Component<IProps> {
   }
 
   public render() {
+    const { classes } = this.props;
     return (
-      <div id="add-article" className="aligner-right">
-        <form onSubmit={this.handleSubmit}>
-          <Input
-            onChange={this.handleChange}
-            value={this.props.value}
-            margin="dense"
-            placeholder="Search"
-            endAdornment={
-              <InputAdornment position="end">
-                <Filter fontSize="small" />
-              </InputAdornment>
-            }
-            inputProps={{
-              'aria-label': 'Search'
-            }}
-          />
-        </form>
-      </div>
+      <form onSubmit={this.handleSubmit}>
+        <Input
+          className={classes.root}
+          onChange={this.handleChange}
+          value={this.props.value}
+          margin="dense"
+          placeholder="Search"
+          endAdornment={
+            <InputAdornment position="end">
+              <Filter fontSize="small" />
+            </InputAdornment>
+          }
+          inputProps={{
+            'aria-label': 'Search'
+          }}
+        />
+      </form>
     );
   }
 
@@ -61,4 +63,4 @@ const mapDispatchToProps = (dispatch: any) =>
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Search);
+)(withStyles(styles)(Search));

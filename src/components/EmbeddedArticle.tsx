@@ -1,10 +1,12 @@
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Grid from "@material-ui/core/Grid";
-import Grow from "@material-ui/core/Grow";
-import IconButton from "@material-ui/core/IconButton";
-import Paper from "@material-ui/core/Paper";
-import { withStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import {
+  CircularProgress,
+  Grid,
+  Grow,
+  IconButton,
+  Paper,
+  withStyles,
+  Typography
+} from "@material-ui/core";
 import Read from "@material-ui/icons/ChromeReaderMode";
 import * as React from "react";
 import ReactHTMLParser, { convertNodeToElement } from "react-html-parser";
@@ -21,6 +23,16 @@ const AddArticle = Loadable({
   loader: () => import("./actionDispatchers/AddArticle"),
   loading: Loader
 });
+
+const styles = {
+  button: { fontSize: "15px" },
+  embed: { borderLeft: "4px outset blue", paddingLeft: "1em" },
+  image: { padding: "4em" },
+  pre: { borderLeft: "4px outset gray", margin: "2em", paddingLeft: "1em" },
+  quote: { borderLeft: "4px outset purple", margin: "2em", paddingLeft: "1em" },
+  root: { display: "inline-block" },
+  title: { marginBottom: "4em" }
+};
 
 interface IProps {
   title: string;
@@ -49,31 +61,35 @@ class Embedded extends React.Component<IProps, IState> {
     const { title, link, fontSize, classes } = this.props;
     const { show, fetching, HTMLData } = this.state;
     return (
-      <span>
-        <a href={link}>{title}</a>
-        <IconButton onClick={this.handleExpand} color="primary">
-          <Read />
-        </IconButton>
-        <AddArticle link={link} />
-        <Grow
-          in={show}
-          children={
-            <Paper className={classes.embed} style={{ fontSize }}>
-              {fetching && (
-                <Grid container={true} alignItems="center" justify="center">
-                  <CircularProgress />
-                </Grid>
-              )}
-              {show &&
-                HTMLData &&
-                ReactHTMLParser(HTMLData, {
-                  decodeEntities: false,
-                  transform: this.transform
-                })}
-            </Paper>
-          }
-        />
-      </span>
+      <>
+        <div className={classes.root}>
+          <a href={link}>{title}</a>
+          <IconButton onClick={this.handleExpand} color="primary">
+            <Read className={classes.button} />
+          </IconButton>
+          <AddArticle link={link} />
+        </div>
+        {show && (
+          <Grow
+            in={show}
+            children={
+              <Paper className={classes.embed} style={{ fontSize }}>
+                {fetching && (
+                  <Grid container={true} alignItems="center" justify="center">
+                    <CircularProgress />
+                  </Grid>
+                )}
+                {show &&
+                  HTMLData &&
+                  ReactHTMLParser(HTMLData, {
+                    decodeEntities: false,
+                    transform: this.transform
+                  })}
+              </Paper>
+            }
+          />
+        )}{" "}
+      </>
     );
   }
 
@@ -168,14 +184,5 @@ const mapStateToProps = (state: any, ownProps: any) => {
     fontSize: state.ui.fontSize,
     uid: state.user.uid
   };
-};
-
-const styles = {
-  embed: { borderLeft: "4px outset blue", paddingLeft: "1em" },
-  image: { padding: "4em" },
-  pre: { borderLeft: "4px outset gray", margin: "2em", paddingLeft: "1em" },
-  quote: { borderLeft: "4px outset purple", margin: "2em", paddingLeft: "1em" },
-  root: { padding: "2em 4em" },
-  title: { marginBottom: "4em" }
 };
 export default connect(mapStateToProps)(withStyles(styles)(Embedded));

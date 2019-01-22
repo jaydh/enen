@@ -1,26 +1,45 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import App from './App';
-import appReducer from './reducers/index';
-import { unregister } from './registerServiceWorker';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import App from "./App";
+import Loader from "./components/Loader";
+import appReducer from "./reducers/index";
+import { unregister } from "./registerServiceWorker";
+import { Provider } from "react-redux";
+import { applyMiddleware, createStore } from "redux";
+import { composeWithDevTools } from "redux-devtools-extension";
+import thunk from "redux-thunk";
+import { persistStore, persistReducer } from "redux-persist";
+import { PersistGate } from "redux-persist/integration/react";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web and AsyncStorage for react-native
+import { Grid, CircularProgress } from "@material-ui/core";
+import rootReducer from "./reducers";
 
-import { Provider } from 'react-redux';
-import { applyMiddleware, createStore } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import thunk from 'redux-thunk';
+const persistConfig = {
+  key: "root",
+  storage,
+  blacklist: ["user"]
+};
 
-(window as any).__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
-
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = createStore(
-  appReducer,
+  persistedReducer,
   composeWithDevTools(applyMiddleware(thunk))
 );
-
+export const persistor = persistStore(store);
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <PersistGate
+      loading={
+        <Grid container={true} alignItems="center" justify="center">
+          <CircularProgress />
+        </Grid>
+      }
+      persistor={persistor}
+    >
+      <App />
+    </PersistGate>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 unregister();

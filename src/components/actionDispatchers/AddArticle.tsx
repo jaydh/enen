@@ -1,4 +1,4 @@
-import IconButton from '@material-ui/core/IconButton';
+import { IconButton, withStyles } from '@material-ui/core';
 import Add from '@material-ui/icons/NoteAdd';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -8,8 +8,11 @@ import addArticle from '../../actions/addArticle';
 interface IProps {
   addArticle: (t: string) => (dispatch: any, getState: any) => Promise<void>;
   link: string;
+  classes: any;
 }
-
+const styles = {
+  button: { fontSize: '15px' }
+};
 class AddArticle extends React.Component<IProps> {
   constructor(props: any) {
     super(props);
@@ -17,9 +20,10 @@ class AddArticle extends React.Component<IProps> {
   }
 
   public render() {
+    const { classes } = this.props;
     return (
       <IconButton color="primary" onClick={this.handleSubmit}>
-        <Add fontSize="small" />
+        <Add className={classes.button} />
       </IconButton>
     );
   }
@@ -36,4 +40,4 @@ const mapDispatchToProps = (dispatch: any, ownProps: any) =>
 export default connect(
   null,
   mapDispatchToProps
-)(AddArticle);
+)(withStyles(styles)(AddArticle));

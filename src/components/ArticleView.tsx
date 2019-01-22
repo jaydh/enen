@@ -39,6 +39,7 @@ const Highlight = Loadable({
 });
 
 interface IProps {
+  article?: any;
   fontSize: number;
   classes: any;
   getHTML: () => void;
@@ -75,37 +76,15 @@ class ArticleView extends React.Component<IProps, IState> {
     this.getProgress = this.getProgress.bind(this);
     this.transform = this.transform.bind(this);
     this.getArticlesInView = this.getArticlesInView.bind(this);
+    this.getArticleHTML = this.getArticleHTML.bind(this);
   }
 
   public async componentDidMount() {
     const articleId = this.props.match.params.id;
-    await database
-      .collection("articleDB")
-      .doc(articleId)
-      .get()
-      .then((doc: any) => {
-        // Remember last viewed article
-        this.props.updateLastArticle(doc.data());
-        return this.setState({
-          HTMLData: doc.data() ? doc.data().HTMLData : undefined,
-          fetching: false,
-          link: doc.data() ? doc.data().link : undefined,
-          metadata: doc.data() ? doc.data().metadata : undefined
-        });
-      });
-
-    await database
-      .collection("userData")
-      .doc(this.props.uid)
-      .collection("articles")
-      .doc(articleId)
-      .get()
-      .then((doc: any) =>
-        this.setState({
-          bookmark: doc.data() ? doc.data().bookmark : undefined,
-          progress: doc.data() ? doc.data().progress : undefined
-        })
-      );
+    this.getArticleHTML(articleId);
+    if (this.props.uid) {
+      await this.getArticleProgress(articleId, this.props.uid);
+    }
     const intervalId = setInterval(() => {
       this.getBookmark();
       this.getProgress();
@@ -181,6 +160,44 @@ class ArticleView extends React.Component<IProps, IState> {
       </Grid>
     );
   }
+  private getArticleHTML = async (id: string) => {
+    const { article } = this.props;
+    return article.HTMLData
+      ? this.setState({
+          HTMLData: article.HTMLData,
+          fetching: false,
+          link: article.link ? article.link : undefined,
+          metadata: article.metadata ? article.metadata : undefined
+        })
+      : await database
+          .collection("articleDB")
+          .doc(id)
+          .get()
+          .then((doc: any) => {
+            // Remember last viewed article
+            this.props.updateLastArticle(doc.data());
+
+            return this.setState({
+              HTMLData: doc.data() ? doc.data().HTMLData : undefined,
+              fetching: false,
+              link: doc.data() ? doc.data().link : undefined,
+              metadata: doc.data() ? doc.data().metadata : undefined
+            });
+          });
+  };
+
+  private getArticleProgress = (id: string, uid: string) =>
+    database
+      .collection("userData")
+      .doc(uid)
+      .collection("articles")
+      .doc(id)
+      .get()
+      .then((doc: any) =>
+        this.setState({
+          bookmark: doc.data() ? doc.data().bookmark : undefined
+        })
+      );
 
   private transform(node: any, index: number) {
     const { classes, fontSize } = this.props;
@@ -258,6 +275,7 @@ class ArticleView extends React.Component<IProps, IState> {
           const newBookmark = elements[i > 0 ? i - 1 : i].textContent;
           if (newBookmark) {
             this.props.updateBookmark(id, newBookmark);
+            return;
           }
         }
       }
@@ -328,7 +346,10 @@ class ArticleView extends React.Component<IProps, IState> {
 const mapStateToProps = (state: any, ownProps: any) => {
   return {
     fontSize: state.ui.fontSize,
-    uid: state.user.uid
+    uid: state.user.uid,
+    article: state.articles.articles.find(
+      (t: any) => t.id === ownProps.match.params.id
+    )
   };
 };
 

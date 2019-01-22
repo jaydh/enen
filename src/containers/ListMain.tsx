@@ -1,54 +1,21 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
+import * as React from "react";
 
-import loader from '../helpers/loader';
-const AddArticle = loader(() => import('../components/AddArticleForm'));
-const List = loader(() => import('../components/List'));
-const Search = loader(() => import('../components/Search'));
-const Sort = loader(() => import('../components/Sort'));
+import loader from "../helpers/loader";
+const List = loader(() => import("../components/List"));
+const ListOptions = loader(() => import("../components/ListOptions"));
+import { Grid } from "@material-ui/core";
 
-import Grid from '@material-ui/core/Grid';
-
-interface IProps {
-  listEmpty: boolean;
-}
-
-class ListMain extends React.Component<IProps> {
+export default class ListMain extends React.Component {
   public render() {
-    const { listEmpty } = this.props;
     return (
       <Grid container={true} alignItems="center" justify="center">
+        <ListOptions />
         <Grid
           item={true}
-          spacing={40}
-          alignItems="center"
-          justify="center"
           container={true}
+          justify="center"
           xs={12}
-          sm={12}
-          md={12}
-          lg={12}
-        >
-          <Grid item={true}>
-            <AddArticle />
-          </Grid>
-          {!listEmpty && (
-            <>
-              <Grid item={true}>
-                <Search />
-              </Grid>
-              <Grid item={true}>
-                <Sort />
-              </Grid>
-            </>
-          )}
-        </Grid>
-        <Grid
-          item={true}
-          container={true}
-          justify="center"
-          xs={4}
-          sm={4}
+          sm={10}
           md={9}
           lg={7}
         >
@@ -58,11 +25,3 @@ class ListMain extends React.Component<IProps> {
     );
   }
 }
-
-const mapStateToProps = (state: any) => {
-  return {
-    listEmpty: state.articles.articles.length === 0
-  };
-};
-
-export default connect(mapStateToProps)(ListMain);
