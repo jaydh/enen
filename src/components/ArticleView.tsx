@@ -81,7 +81,8 @@ class ArticleView extends React.Component<IProps, IState> {
 
   public async componentDidMount() {
     const articleId = this.props.match.params.id;
-    this.getArticleHTML(articleId);
+    await this.getArticleHTML(articleId);
+    document.title += ` - ${this.props.article.metadata.title}`;
     if (this.props.uid) {
       await this.getArticleProgress(articleId, this.props.uid);
     }
@@ -105,6 +106,7 @@ class ArticleView extends React.Component<IProps, IState> {
 
   public componentWillUnmount() {
     clearInterval(this.state.intervalId);
+    document.title = "enen";
   }
 
   public render() {

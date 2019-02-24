@@ -48,7 +48,6 @@ class LabelBottomNavigation extends React.Component<IProps, IState> {
     const initials = displayName ? displayName.match(/\b\w/g).join("") : "";
     const value = location.pathname;
 
-    console.log(smallDevice);
     return (
       <BottomNavigation
         className={classes.root}

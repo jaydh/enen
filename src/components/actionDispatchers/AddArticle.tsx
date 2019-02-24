@@ -1,9 +1,9 @@
-import { IconButton, withStyles } from '@material-ui/core';
-import Add from '@material-ui/icons/NoteAdd';
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import addArticle from '../../actions/addArticle';
+import { IconButton, withStyles } from "@material-ui/core";
+import { Bookmark } from "@material-ui/icons";
+import * as React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import addArticle from "../../actions/addArticle";
 
 interface IProps {
   addArticle: (t: string) => (dispatch: any, getState: any) => Promise<void>;
@@ -11,7 +11,7 @@ interface IProps {
   classes: any;
 }
 const styles = {
-  button: { fontSize: '15px' }
+  button: { fontSize: "15px" }
 };
 class AddArticle extends React.Component<IProps> {
   constructor(props: any) {
@@ -23,7 +23,7 @@ class AddArticle extends React.Component<IProps> {
     const { classes } = this.props;
     return (
       <IconButton color="primary" onClick={this.handleSubmit}>
-        <Add className={classes.button} />
+        <Bookmark className={classes.button} />
       </IconButton>
     );
   }
