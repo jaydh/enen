@@ -10,7 +10,8 @@ import {
   BottomNavigation,
   Fade,
   Typography,
-  withStyles
+  withStyles,
+  Tooltip
 } from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
 import CollectionsBookmark from "@material-ui/icons/CollectionsBookmark";
@@ -62,18 +63,16 @@ class LabelBottomNavigation extends React.Component<IProps, IState> {
         value={value}
         onChange={this.handleChange}
       >
-        {value.startsWith("/article/") && <Typography>a</Typography>}
+        {value.startsWith("/article/") && <Typography />}
         <BottomNavigationAction label="List" value="/list" icon={<List />} />
         <BottomNavigationAction
           label="Article"
           value={"/article/" + this.props.lastArticleId}
           icon={<CollectionsBookmark />}
         />
-        <BottomNavigationAction
-          label="Stats"
-          value="/stats"
-          icon={<Timeline />}
-        />
+        <Tooltip title="coming soon!">
+          <BottomNavigationAction label="Stats" icon={<Timeline />} />
+        </Tooltip>
         <BottomNavigationAction
           label={initials}
           icon={<Person />}

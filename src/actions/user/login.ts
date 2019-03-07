@@ -8,31 +8,33 @@ export interface ILogin {
 }
 
 export const login = (email: string, password: string) => {
-  return async (dispatch: Dispatch<ILogin>) => {
-    const token = await axios
+  return async (dispatch: Dispatch<any>) => {
+    return axios
       .post(`${serverIP}/auth/login`, {
         email,
         password
       })
-      .then(res => res.data.accessToken)
+      .then(res =>
+        dispatch({ type: "LOGIN", token: res.data && res.data.accessToken })
+      )
       .catch(function(error) {
         console.log(error);
       });
-    dispatch({ type: "LOGIN", token });
   };
 };
 
 export const register = (email: string, password: string) => {
-  return async (dispatch: Dispatch<ILogin>) => {
-    const data = await axios
+  return async (dispatch: Dispatch<any>) => {
+    return await axios
       .post(`${serverIP}/auth/register`, {
         email,
         password
       })
-      .then(res => res.data)
+      .then(res =>
+        dispatch({ type: "LOGIN", token: res.data && res.data.accessToken })
+      )
       .catch(function(error) {
         console.log(error);
       });
-    console.log(data);
   };
 };

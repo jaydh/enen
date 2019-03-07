@@ -29,8 +29,8 @@ export default () => {
   ) => {
     const token = getState().user.token;
     dispatch(getArticlesRequested());
-    if (token) {
-      const articleIDs = await axios({
+    const articleIDs =
+      (await axios({
         method: "GET",
         url: `${serverIP}/user/articles`,
         headers: { Authorization: `Bearer ${token}` }
@@ -38,31 +38,30 @@ export default () => {
         .then(res => res.data)
         .catch(function(error) {
           console.log(error);
-        });
-      console.log(articleIDs);
-      // Merge ids with content
-      const articleDataPromises = articleIDs.map(
-        async (article: { id: string }) => {
-          return axios({
-            method: "GET",
-            url: `${serverIP}/article/get/${article.id}`
-          })
-            .then(
-              res =>
-                res.data &&
-                Object.assign({}, article, {
-                  url: res.data.url,
-                  metadata: res.data.metadata
-                })
-            )
-            .catch(function(error) {
-              console.log(error);
-            });
-        }
-      );
+        })) || [];
 
-      const articles = await Promise.all(articleDataPromises);
-      dispatch(getArticlesFulfilled(articles));
-    }
+    // Merge ids with content
+    const articleDataPromises = articleIDs.map(
+      async (article: { id: string }) => {
+        return axios({
+          method: "GET",
+          url: `${serverIP}/article/get/${article.id}`
+        })
+          .then(
+            res =>
+              res.data &&
+              Object.assign({}, article, {
+                url: res.data.url,
+                metadata: res.data.metadata
+              })
+          )
+          .catch(function(error) {
+            console.log(error);
+          });
+      }
+    );
+
+    const articles = await Promise.all(articleDataPromises);
+    dispatch(getArticlesFulfilled(articles));
   };
 };
