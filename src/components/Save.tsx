@@ -3,7 +3,7 @@ import { IconButton } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import saveArticles from "../actions/saveArticles";
+import saveArticles from "../actions/article/saveArticles";
 
 interface IProps {
   onClick: () => void;

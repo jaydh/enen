@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import Loader from "./components/Loader";
 import ScrollToTop from "./components/ScrollToTop";
 import "./index.css";
+import axios from "axios";
 
 const ListMain = Loadable({
   loader: () => import("./containers/ListMain"),
@@ -39,7 +40,6 @@ class App extends React.Component {
             <ScrollToTop>
               <Route exact={true} path="/" component={ListMain} />
               <Route path="/list" component={ListMain} />
-              <Route path="/me" component={UserPage} />
               <Route path="/article/:id" component={ArticleView} />
               <Route path="/stats" component={StatsMain} />
               <Route path="/about" component={About} />

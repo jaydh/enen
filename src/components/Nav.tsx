@@ -3,10 +3,15 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import loader from "../helpers/loader";
 const ArticleViewOptions = loader(() => import("./ArticleViewOptions"));
-import BottomNavigation from "@material-ui/core/BottomNavigation";
-import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import Fade from "@material-ui/core/Fade";
-import { withStyles } from "@material-ui/core/styles";
+const UserModal = loader(() => import("../containers/UserPage"));
+
+import {
+  BottomNavigationAction,
+  BottomNavigation,
+  Fade,
+  Typography,
+  withStyles
+} from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
 import CollectionsBookmark from "@material-ui/icons/CollectionsBookmark";
 import List from "@material-ui/icons/List";
@@ -20,18 +25,20 @@ interface IProps {
   location: any;
   match: any;
   lastArticleId?: string;
+  signedIn: boolean;
 }
 
 interface IState {
   smallDevice: boolean;
+  showModal: boolean;
 }
 
 class LabelBottomNavigation extends React.Component<IProps, IState> {
   public constructor(props: IProps) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
     this.state = {
-      smallDevice: window.matchMedia("(max-width: 992px)").matches
+      smallDevice: window.matchMedia("(max-width: 992px)").matches,
+      showModal: !props.signedIn
     };
   }
 
@@ -42,7 +49,7 @@ class LabelBottomNavigation extends React.Component<IProps, IState> {
     window.addEventListener("resize", this.handleResize);
   }
   public render() {
-    const { classes, location, user } = this.props;
+    const { classes, location, user, signedIn } = this.props;
     const { smallDevice } = this.state;
     const { displayName } = user;
     const initials = displayName ? displayName.match(/\b\w/g).join("") : "";
@@ -55,6 +62,7 @@ class LabelBottomNavigation extends React.Component<IProps, IState> {
         value={value}
         onChange={this.handleChange}
       >
+        {value.startsWith("/article/") && <Typography>a</Typography>}
         <BottomNavigationAction label="List" value="/list" icon={<List />} />
         <BottomNavigationAction
           label="Article"
@@ -68,29 +76,34 @@ class LabelBottomNavigation extends React.Component<IProps, IState> {
         />
         <BottomNavigationAction
           label={initials}
-          value="/me"
           icon={<Person />}
+          onClick={this.toggleModal}
         />
-        {value === "/article/" + this.props.lastArticleId && (
-          <Fade in={value === "/article/" + this.props.lastArticleId}>
+        {value.startsWith("/article/") && (
+          <Fade in={value.startsWith("/article/")}>
             <Toolbar
               className={smallDevice ? classes.smallDevice : classes.rightSide}
             >
               <ArticleViewOptions />
             </Toolbar>
           </Fade>
-        )}{" "}
+        )}
+        <UserModal show={this.state.showModal} toggler={this.toggleModal} />
       </BottomNavigation>
     );
   }
 
-  private handleChange(event: any, value: string) {
+  private handleChange = (event: any, value: string) => {
     this.props.history.push(value);
-  }
+  };
   private handleResize = () =>
     this.setState({
       smallDevice: window.matchMedia("(max-width: 992px)").matches
     });
+
+  private toggleModal = () => {
+    this.setState({ showModal: !this.state.showModal });
+  };
 }
 
 const styles = {
@@ -109,7 +122,8 @@ const styles = {
 const mapStateToProps = (state: any) => {
   return {
     lastArticleId: state.ui.lastArticle ? state.ui.lastArticle.id : undefined,
-    user: state.user
+    user: state.user,
+    signedIn: state.user.signedIn
   };
 };
 

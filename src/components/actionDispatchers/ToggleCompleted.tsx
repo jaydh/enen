@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import setArticleComplete from '../../actions/setArticleComplete';
+import * as React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import setArticleComplete from "../../actions/article/setArticleComplete";
 
-import IconButton from '@material-ui/core/IconButton';
-import DoneIcon from '@material-ui/icons/Done';
+import IconButton from "@material-ui/core/IconButton";
+import DoneIcon from "@material-ui/icons/Done";
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from "@material-ui/core/styles";
 
 interface IProps {
   id: string;
@@ -26,7 +26,7 @@ class ToggleCompleted extends React.Component<IProps> {
     return (
       <IconButton
         className={classes.button}
-        color={completedOn ? 'secondary' : 'primary'}
+        color={completedOn ? "secondary" : "primary"}
         aria-label="Mark Complete"
         onClick={this.handleToggleComplete}
       >
@@ -58,8 +58,8 @@ const mapDispatchToProps = (dispatch: any) =>
 
 const styles = {
   button: {
-    colorPrimary: '#ff0000',
-    colorSecondary: '#ff0000',
+    colorPrimary: "#ff0000",
+    colorSecondary: "#ff0000",
     margin: 5
   }
 };

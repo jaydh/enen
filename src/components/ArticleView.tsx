@@ -4,12 +4,14 @@ import ReactHTMLParser, { convertNodeToElement } from "react-html-parser";
 import Loadable from "react-loadable";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import updateBookmark from "../actions/updateBookmark";
+import updateBookmark from "../actions/article/updateBookmark";
 import updateLastArticle from "../actions/updateLastArticle";
-import updateProgress from "../actions/updateProgress";
+import updateProgress from "../actions/article/updateProgress";
 import Loader from "../components/Loader";
-import { database, requestServerParse } from "../firebase";
-import hash from "../helpers/hash";
+import axios from "axios";
+import { serverIP } from "../hosts";
+import { requestServerParse } from "../actions/article/requestParse";
+import { produce } from "immer";
 
 const Divider = Loadable({
   delay: 200,
@@ -48,11 +50,11 @@ interface IProps {
   updateBookmark: (id: string, bookmark: string) => void;
   updateProgress: (id: string, progress: number) => void;
   updateLastArticle: (t: string) => void;
+  requestServerParse: (url: string) => void;
 }
 
 interface IState {
-  HTMLData?: string;
-  bookmark?: string;
+  HTML?: string;
   link?: string;
   metadata?: any;
   progress?: number;
@@ -60,6 +62,7 @@ interface IState {
   articleLinks: HTMLAnchorElement[];
   articleNodeList: Element[];
   intervalId: any;
+  requestedParses: string[];
 }
 
 class ArticleView extends React.Component<IProps, IState> {
@@ -69,28 +72,22 @@ class ArticleView extends React.Component<IProps, IState> {
       articleLinks: [],
       articleNodeList: [],
       fetching: true,
-      intervalId: null
+      intervalId: null,
+      requestedParses: []
     };
-    this.getBookmark = this.getBookmark.bind(this);
-    this.scrollToBookmark = this.scrollToBookmark.bind(this);
-    this.getProgress = this.getProgress.bind(this);
-    this.transform = this.transform.bind(this);
-    this.getArticlesInView = this.getArticlesInView.bind(this);
-    this.getArticleHTML = this.getArticleHTML.bind(this);
   }
 
   public async componentDidMount() {
     const articleId = this.props.match.params.id;
-    await this.getArticleHTML(articleId);
+    const { HTML, link, metadata } = await this.getArticleData(articleId);
+    this.setState({ HTML, link, metadata, fetching: false });
     document.title += ` - ${this.props.article.metadata.title}`;
-    if (this.props.uid) {
-      await this.getArticleProgress(articleId, this.props.uid);
-    }
+
     const intervalId = setInterval(() => {
       this.getBookmark();
       this.getProgress();
       this.getArticlesInView();
-    }, 20000);
+    }, 5000);
 
     // Find all nodes in page with textContent
     await this.setState({
@@ -101,6 +98,7 @@ class ArticleView extends React.Component<IProps, IState> {
 
       intervalId
     });
+    console.log("d");
     this.scrollToBookmark();
   }
 
@@ -111,19 +109,18 @@ class ArticleView extends React.Component<IProps, IState> {
 
   public render() {
     const { classes, fontSize } = this.props;
-    const { HTMLData, fetching, metadata, link } = this.state;
+    const { HTML, fetching, metadata, link } = this.state;
     const title =
       metadata && (metadata.title || metadata.ogTitle)
         ? metadata.title || metadata.ogTitle
         : link;
 
     const siteName = metadata && (metadata.siteName || metadata.ogSiteName);
-    const description =
-      metadata && (metadata.ogDescrption || metadata.description);
+    const description = metadata && metadata.excerpt;
     const subtitle = `${siteName ? siteName : ""} ${
       description ? "-" + description : ""
     }`;
-    return fetching || HTMLData ? (
+    return fetching || HTML ? (
       <Grid container={true} alignItems="center" justify="center">
         <Grid
           item={true}
@@ -146,7 +143,7 @@ class ArticleView extends React.Component<IProps, IState> {
                 <Loader pastDelay={false} isLoading={fetching} />
               ) : (
                 <div style={{ fontSize, lineHeight: "1.5" }}>
-                  {ReactHTMLParser(HTMLData!.replace(/(&nbsp;)*/g, ""), {
+                  {ReactHTMLParser(HTML, {
                     decodeEntities: false,
                     transform: this.transform
                   })}
@@ -162,46 +159,28 @@ class ArticleView extends React.Component<IProps, IState> {
       </Grid>
     );
   }
-  private getArticleHTML = async (id: string) => {
+  private getArticleData = async (id: string) => {
     const { article } = this.props;
     return article.HTMLData
-      ? this.setState({
-          HTMLData: article.HTMLData,
+      ? {
+          HTML: article.HTMLData,
           fetching: false,
           link: article.link ? article.link : undefined,
           metadata: article.metadata ? article.metadata : undefined
+        }
+      : await axios({
+          method: "GET",
+          url: `${serverIP}/article/get/${article.id}`
         })
-      : await database
-          .collection("articleDB")
-          .doc(id)
-          .get()
-          .then((doc: any) => {
-            // Remember last viewed article
-            this.props.updateLastArticle(doc.data());
-
-            return this.setState({
-              HTMLData: doc.data() ? doc.data().HTMLData : undefined,
-              fetching: false,
-              link: doc.data() ? doc.data().link : undefined,
-              metadata: doc.data() ? doc.data().metadata : undefined
-            });
+          .then(res => {
+            return res.data;
+          })
+          .catch(function(error) {
+            console.log(error);
           });
   };
 
-  private getArticleProgress = (id: string, uid: string) =>
-    database
-      .collection("userData")
-      .doc(uid)
-      .collection("articles")
-      .doc(id)
-      .get()
-      .then((doc: any) =>
-        this.setState({
-          bookmark: doc.data() ? doc.data().bookmark : undefined
-        })
-      );
-
-  private transform(node: any, index: number) {
+  private transform = (node: any, index: number) => {
     const { classes, fontSize } = this.props;
     if (node.name && node.name.startsWith("h")) {
       return (
@@ -253,55 +232,52 @@ class ArticleView extends React.Component<IProps, IState> {
       node.children[0] &&
       node.children[0].data
     ) {
-      const id = hash(node.attribs.href);
       return (
         <EmbeddedArticle
           title={node.children[0].data}
-          id={id.toString()}
-          link={node.attribs.href}
+          url={node.attribs.href}
         />
       );
     }
     return undefined;
-  }
+  };
 
-  private getBookmark() {
+  private getBookmark = () => {
     const elements = this.state.articleNodeList;
     const id = this.props.match.params.id;
-
     if (elements) {
       for (let i = 0, max = elements.length; i < max; i++) {
         const element = elements[i];
         if (this.elementInView(element)) {
           // Use previous element unless first element
           const newBookmark = elements[i > 0 ? i - 1 : i].textContent;
-          if (newBookmark) {
+          if (newBookmark && newBookmark !== this.props.article.bookmark) {
             this.props.updateBookmark(id, newBookmark);
             return;
           }
         }
       }
     }
-  }
+  };
 
-  private getArticlesInView() {
+  private getArticlesInView = () => {
+    const { requestedParses } = this.state;
     const targets = this.state.articleLinks.filter((e: HTMLAnchorElement) =>
       this.elementInView(e)
     );
     targets.forEach(async (e: HTMLAnchorElement) => {
-      const id = hash(e.href).toString();
-      const data = await database
-        .collection("articleDB")
-        .doc(id)
-        .get()
-        .then((doc: any) => doc.data());
-      if (!data) {
-        requestServerParse({ id, link: e.href });
+      if (!requestedParses.find((url: string) => url === e.href)) {
+        this.setState(
+          produce(draft => {
+            draft.requestedParses.push(e.href);
+          })
+        );
+        this.props.requestServerParse(e.href);
       }
     });
-  }
+  };
 
-  private elementInView(e: Element) {
+  private elementInView = (e: Element) => {
     const rect = e.getBoundingClientRect();
     return (
       rect.top >= 0 &&
@@ -310,15 +286,18 @@ class ArticleView extends React.Component<IProps, IState> {
         (window.innerHeight || document.documentElement!.clientHeight) &&
       rect.right <= (window.innerWidth || document.documentElement!.clientWidth)
     );
-  }
+  };
 
-  private scrollToBookmark() {
+  private scrollToBookmark = () => {
     const elements = this.state.articleNodeList;
+    const { bookmark } = this.props.article;
     if (elements) {
+      console.log("d", this.state);
       const target = Array.from(elements).find(
-        (el: any) => el.textContent === this.state.bookmark
+        (el: any) => el.textContent === bookmark
       ) as HTMLElement;
       if (target) {
+        console.log("as i");
         target.scrollIntoView({
           behavior: "smooth",
           block: "start",
@@ -326,9 +305,9 @@ class ArticleView extends React.Component<IProps, IState> {
         });
       }
     }
-  }
+  };
 
-  private getProgress() {
+  private getProgress = () => {
     const h = document.getElementById("main");
     if (h) {
       const id = this.props.match.params.id;
@@ -342,7 +321,7 @@ class ArticleView extends React.Component<IProps, IState> {
         this.setState({ progress: newProgress });
       }
     }
-  }
+  };
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
@@ -357,7 +336,12 @@ const mapStateToProps = (state: any, ownProps: any) => {
 
 const mapDispatchToProps = (dispatch: any) =>
   bindActionCreators(
-    { updateLastArticle, updateBookmark, updateProgress },
+    {
+      updateLastArticle,
+      updateBookmark,
+      updateProgress,
+      requestServerParse
+    },
     dispatch
   );
 

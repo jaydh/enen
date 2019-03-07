@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import FollowLink from './actionDispatchers/FollowLink';
-import SetFontSize from './actionDispatchers/SetFontSize';
-import ToggleCompleted from './actionDispatchers/ToggleCompleted';
+import * as React from "react";
+import { connect } from "react-redux";
+import FollowLink from "./actionDispatchers/FollowLink";
+import SetFontSize from "./actionDispatchers/SetFontSize";
+import ToggleCompleted from "./actionDispatchers/ToggleCompleted";
 import {
   Button,
   Popper,
@@ -12,8 +12,8 @@ import {
   MenuList,
   MenuItem,
   withStyles
-} from '@material-ui/core';
-import { MoreVert } from '@material-ui/icons';
+} from "@material-ui/core";
+import { MoreVert } from "@material-ui/icons";
 
 interface IProps {
   id: string;
@@ -33,7 +33,7 @@ class Options extends React.Component<IProps, IState> {
     this.state = {
       open: false,
       anchorEl: undefined,
-      smallDevice: window.matchMedia('(max-width: 992px)').matches
+      smallDevice: window.matchMedia("(max-width: 992px)").matches
     };
     this.handleClose = this.handleClose.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
@@ -41,10 +41,10 @@ class Options extends React.Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    window.addEventListener('resize', this.handleResize);
+    window.addEventListener("resize", this.handleResize);
   }
   public componentWillUnmount() {
-    window.addEventListener('resize', this.handleResize);
+    window.addEventListener("resize", this.handleResize);
   }
 
   public render() {
@@ -54,7 +54,7 @@ class Options extends React.Component<IProps, IState> {
       <div className={classes.root}>
         <Button
           buttonRef={this.handleRef}
-          aria-owns={open ? 'menu-list-grow' : undefined}
+          aria-owns={open ? "menu-list-grow" : undefined}
           aria-haspopup="true"
           onClick={this.handleToggle}
         >
@@ -68,12 +68,11 @@ class Options extends React.Component<IProps, IState> {
           transition={true}
           disablePortal={true}
         >
-          {({ TransitionProps, placement }) => (
+          {({ TransitionProps }) => (
             <Grow
               {...TransitionProps}
               style={{
-                transformOrigin:
-                  placement === 'bottom' ? 'center top' : 'center bottom'
+                transformOrigin: "center top"
               }}
             >
               <Paper>
@@ -120,7 +119,7 @@ class Options extends React.Component<IProps, IState> {
   }
   private handleResize = () =>
     this.setState({
-      smallDevice: window.matchMedia('(max-width: 992px)').matches
+      smallDevice: window.matchMedia("(max-width: 992px)").matches
     });
 }
 
@@ -134,11 +133,11 @@ const mapStateToProps = (state: any) => {
 
 const styles = {
   options: {
-    colorPrimary: '#855a91',
+    colorPrimary: "#855a91",
     zIndex: 100
   },
   root: {
-    display: 'flex'
+    display: "flex"
   }
 };
 

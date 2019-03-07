@@ -4,8 +4,18 @@ import loader from "../helpers/loader";
 const List = loader(() => import("../components/List"));
 const ListOptions = loader(() => import("../components/ListOptions"));
 import { Grid } from "@material-ui/core";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import getArticles from "../actions/article/getArticles";
 
-export default class ListMain extends React.Component {
+interface IProps {
+  getArticles: () => void;
+}
+
+class ListMain extends React.Component<IProps> {
+  public componentDidMount() {
+    this.props.getArticles();
+  }
   public render() {
     return (
       <Grid container={true} alignItems="center" justify="center">
@@ -25,3 +35,9 @@ export default class ListMain extends React.Component {
     );
   }
 }
+const mapDispatch = (dispatch: any) =>
+  bindActionCreators({ getArticles }, dispatch);
+export default connect(
+  undefined,
+  mapDispatch
+)(ListMain);

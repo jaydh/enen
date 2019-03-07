@@ -13,7 +13,8 @@ import ReactHTMLParser, { convertNodeToElement } from "react-html-parser";
 import Loadable from "react-loadable";
 import { connect } from "react-redux";
 import Loader from "../components/Loader";
-import { database, requestServerParse } from "../firebase";
+import { serverIP } from "../hosts";
+import axios from "axios";
 
 const Highlight = Loadable({
   loader: () => import("react-highlight"),
@@ -36,8 +37,7 @@ const styles = {
 
 interface IProps {
   title: string;
-  id: string;
-  link: string;
+  url: string;
   classes: any;
   fontSize: number;
 }
@@ -52,22 +52,20 @@ class Embedded extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = { show: false, fetching: true };
-    this.getHTML = this.getHTML.bind(this);
-    this.transform = this.transform.bind(this);
-    this.handleExpand = this.handleExpand.bind(this);
   }
 
   public render() {
-    const { title, link, fontSize, classes } = this.props;
+    const { title, url, fontSize, classes } = this.props;
     const { show, fetching, HTMLData } = this.state;
+    console.log(fetching);
     return (
       <>
         <div className={classes.root}>
-          <a href={link}>{title}</a>
+          <a href={url}>{title}</a>
           <IconButton onClick={this.handleExpand} color="primary">
             <Read className={classes.button} />
           </IconButton>
-          <AddArticle link={link} />
+          <AddArticle link={url} />
         </div>
         {show && (
           <Grow
@@ -93,41 +91,38 @@ class Embedded extends React.Component<IProps, IState> {
     );
   }
 
-  private handleExpand() {
+  private handleExpand = async () => {
     this.setState({ show: !this.state.show });
     if (!this.state.HTMLData) {
       this.getHTML();
     }
-  }
-  private async getHTML() {
-    const { id, link } = this.props;
-    // Document accessor for id must be string
-    // tslint:disable:no-empty
-    const data = await database
-      .collection("articleDB")
-      .doc(id)
-      .get()
-      .then((doc: any) => doc.data());
-    if (data) {
-      this.setState({ HTMLData: data.HTMLData, fetching: data.fetching });
-    } else {
-      requestServerParse({ id: id.toString(), link });
-      const ref = database.collection("articleDB").doc(id);
-      const unsubscribe = ref.onSnapshot(() => {});
-      ref.onSnapshot((doc: any) => {
-        // tslint:disable:no-shadowed-variable
-        const data = doc.data();
-        if (data) {
-          this.setState({ HTMLData: data.HTMLData, fetching: data.fetching });
-          if (data.HTMLData && !data.fetching) {
-            unsubscribe();
-          }
-        }
-      });
-    }
-  }
+  };
+  private getHTML = async () => {
+    const { url } = this.props;
+    const request = async () => {
+      const { article } = await axios({
+        method: "POST",
+        url: `${serverIP}/article/add`,
+        data: { url }
+      })
+        .then(res => res.data)
+        .catch(function(error) {
+          console.log(error);
+        });
 
-  private transform(node: any, index: number) {
+      // Stop polling after server signals done fetching
+      if (!article.fetching) {
+        window.clearInterval(interval);
+        console.log(article);
+        this.setState({ HTMLData: article.HTML, fetching: article.fetching });
+      }
+    };
+
+    request();
+    const interval = window.setInterval(request, 1500);
+  };
+
+  private transform = (node: any, index: number) => {
     if (node) {
       const { classes, fontSize } = this.props;
       if (node.name && node.name.startsWith("h")) {
@@ -177,7 +172,7 @@ class Embedded extends React.Component<IProps, IState> {
       return undefined;
     }
     return undefined;
-  }
+  };
 }
 const mapStateToProps = (state: any, ownProps: any) => {
   return {

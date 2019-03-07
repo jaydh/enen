@@ -1,14 +1,14 @@
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { withStyles } from '@material-ui/core';
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import addArticle from '../actions/addArticle';
-import hash from '../helpers/hash';
-import parseUri from '../helpers/parseURI';
-import { IArticle } from '../reducers/articles';
-import AddArticle from './actionDispatchers/AddArticle';
+import Input from "@material-ui/core/Input";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import { withStyles } from "@material-ui/core";
+import * as React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import addArticle from "../actions/article/addArticle";
+import parseUri from "../helpers/parseURI";
+import { IArticle } from "../reducers/articles";
+import AddArticle from "./actionDispatchers/AddArticle";
+import { Grid } from "@material-ui/core";
 
 interface IProps {
   addArticle: (t: string) => (dispatch: any, getState: any) => Promise<void>;
@@ -28,7 +28,7 @@ const styles = { root: {} };
 class AddArticleForm extends React.Component<IProps, IState> {
   constructor(props: any) {
     super(props);
-    this.state = { valid: false, value: '' };
+    this.state = { valid: false, value: "" };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -37,34 +37,38 @@ class AddArticleForm extends React.Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    document.addEventListener('visibilitychange', this.readClipboard, false);
+    document.addEventListener("visibilitychange", this.readClipboard, false);
   }
 
   public componentWillUnmount() {
-    document.removeEventListener('visibilitychange', this.readClipboard, false);
+    document.removeEventListener("visibilitychange", this.readClipboard, false);
   }
 
   public render() {
     const { classes } = this.props;
     return (
-      <form onSubmit={this.handleSubmit}>
-        <Input
-          className={classes.root}
-          error={this.state.value.length > 0 && !this.state.valid}
-          onChange={this.handleChange}
-          value={this.state.value}
-          margin="dense"
-          placeholder="Save Article"
-          endAdornment={
-            <InputAdornment position="end">
-              <AddArticle link={this.state.value} />
-            </InputAdornment>
-          }
-          inputProps={{
-            'aria-label': 'Save article'
-          }}
-        />
-      </form>
+      <Grid container justify="center">
+        <Grid item>
+          <form onSubmit={this.handleSubmit}>
+            <Input
+              className={classes.root}
+              error={this.state.value.length > 0 && !this.state.valid}
+              onChange={this.handleChange}
+              value={this.state.value}
+              margin="dense"
+              placeholder="Save Article"
+              endAdornment={
+                <InputAdornment position="end">
+                  <AddArticle link={this.state.value} />
+                </InputAdornment>
+              }
+              inputProps={{
+                "aria-label": "Save article"
+              }}
+            />
+          </form>
+        </Grid>
+      </Grid>
     );
   }
 
@@ -79,13 +83,13 @@ class AddArticleForm extends React.Component<IProps, IState> {
     event.preventDefault();
     this.props.addArticle(this.state.value);
     this.state.valid
-      ? this.setState({ value: '', valid: false })
-      : alert('invalid hyperlink');
+      ? this.setState({ value: "", valid: false })
+      : alert("invalid hyperlink");
   }
 
   private getValidationState(value: string) {
     const parse = parseUri(value) as any;
-    const exists = this.props.articles[hash(value) as number];
+    const exists = false;
     // Checks if valid hyperlink
     return !exists && parse.authority && parse.protocol ? true : false;
   }

@@ -29,27 +29,32 @@ class ListOptions extends React.Component<IProps> {
         <Grid
           item
           xs={12}
-          sm={!listEmpty ? 5 : 12}
-          md={!listEmpty ? 5 : 12}
-          lg={!listEmpty ? 2 : 12}
+          sm={listEmpty ? 12 : 5}
+          md={listEmpty ? 12 : 5}
+          lg={listEmpty ? 12 : 5}
         >
           <AddArticle />
         </Grid>
-        <Fade in={!listEmpty}>
-          <Grid item xs={8} sm={5} md={5} lg={2}>
-            <Search />
-          </Grid>
-        </Fade>
-        <Fade in={!listEmpty}>
-          <Grid item xs={2} sm={1} md={1} lg={1}>
-            <Sort />
-          </Grid>
-        </Fade>
-        <Fade in={!listEmpty}>
-          <Grid item xs={2} sm={1} md={1} lg={1}>
-            <Save />
-          </Grid>
-        </Fade>
+        {!listEmpty && (
+          <>
+            {" "}
+            <Fade in={!listEmpty}>
+              <Grid item xs={8} sm={5} md={5} lg={2}>
+                <Search />
+              </Grid>
+            </Fade>
+            <Fade in={!listEmpty}>
+              <Grid item xs={2} sm={1} md={1} lg={1}>
+                <Sort />
+              </Grid>
+            </Fade>
+            <Fade in={!listEmpty}>
+              <Grid item xs={2} sm={1} md={1} lg={1}>
+                <Save />
+              </Grid>
+            </Fade>
+          </>
+        )}
       </Grid>
     );
   }

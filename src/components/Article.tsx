@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import deleteArticle from "../actions/deleteArticle";
+import deleteArticle from "../actions/article/deleteArticle";
 import { IArticle } from "../reducers/articles";
 import FollowLink from "./actionDispatchers/FollowLink";
 import ToggleCompleted from "./actionDispatchers/ToggleCompleted";
@@ -32,9 +32,7 @@ interface IProps {
   classes: any;
   expanded: boolean;
   handler: (event: any, expanded: any) => void;
-  deleteArticle: (
-    id: string
-  ) => (dispatch: any, getState: any) => Promise<void>;
+  deleteArticle: (id: string) => (dispatch: any, getState: any) => Promise<any>;
 }
 
 interface IState {
@@ -52,16 +50,11 @@ class Article extends React.Component<IProps, IState> {
   public render() {
     const { article, classes } = this.props;
     const { progress } = article;
-    const title =
-      article.metadata && (article.metadata.title || article.metadata.ogTitle)
-        ? article.metadata.title || article.metadata.ogTitle
-        : article.link;
+    const title = (article.metadata && article.metadata.title) || article.link;
     const siteName =
       article.metadata &&
       (article.metadata.siteName || article.metadata.ogSiteName);
-    const description =
-      article.metadata &&
-      (article.metadata.ogDescrption || article.metadata.description);
+    const description = article.metadata && article.metadata.excerpt;
 
     const secondary =
       siteName && description
@@ -71,8 +64,8 @@ class Article extends React.Component<IProps, IState> {
         : description;
 
     const image =
-      article.metadata && article.metadata.images
-        ? article.metadata.images[0]
+      article.metadata && (article.metadata.image || article.metadata.logo)
+        ? article.metadata.image || article.metadata.logo
         : "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/N_cursiva.gif/400px-N_cursiva.gif";
     return (
       <>

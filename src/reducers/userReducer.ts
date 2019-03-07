@@ -1,14 +1,13 @@
 export default (
   state = {
-    signedIn: false
+    signedIn: false,
+    token: undefined
   },
   action: any
 ) => {
   switch (action.type) {
-    case 'SIGN_IN':
-      return { ...state, ...action.user, signedIn: true };
-    case 'SIGN_OUT':
-      return { ...state, signedIn: false };
+    case 'LOGIN':
+      return { ...state, token: action.token, signedIn: true };
 
     default:
       return state;

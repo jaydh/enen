@@ -1,4 +1,5 @@
-import { database } from '../firebase';
+import axios from 'axios';
+import { serverIP } from '../../hosts';
 
 function updateProgressRequested() {
   return {
@@ -21,20 +22,20 @@ function updateProgressCompleted(id: string, progress: number) {
   };
 }
 
-export default function updateBookmark(id: string, progress: number) {
+export default function updateProgress(id: string, progress: number) {
   return async (dispatch: any, getState: any) => {
+    const token = getState().user.token;
     dispatch(updateProgressRequested());
-    const userRef = database
-      .collection('userData')
-      .doc(getState().user.uid)
-      .collection('articles')
-      .doc(id);
-
-    return userRef
-      .update({
-        progress
+    return axios({
+      method: 'POST',
+      url: `${serverIP}/user/progress`,
+      headers: { Authorization: `Bearer ${token}` },
+      data: { id, progress }
+    })
+      .then(res => {
+        console.log(res);
+        dispatch(updateProgressCompleted(id, progress));
       })
-      .then(() => dispatch(updateProgressCompleted(id, progress)))
       .catch((e: string) => dispatch(updateProgressRejected(e)));
   };
 }
