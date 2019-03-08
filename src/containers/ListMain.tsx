@@ -7,13 +7,16 @@ import { Grid } from "@material-ui/core";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import getArticles from "../actions/article/getArticles";
+import { validateToken } from "../actions/user/validateToken";
 
 interface IProps {
   getArticles: () => void;
+  validateToken: () => void;
 }
 
 class ListMain extends React.Component<IProps> {
-  public componentDidMount() {
+  public async componentDidMount() {
+    this.props.validateToken();
     this.props.getArticles();
   }
   public render() {
@@ -36,7 +39,7 @@ class ListMain extends React.Component<IProps> {
   }
 }
 const mapDispatch = (dispatch: any) =>
-  bindActionCreators({ getArticles }, dispatch);
+  bindActionCreators({ getArticles, validateToken }, dispatch);
 export default connect(
   undefined,
   mapDispatch

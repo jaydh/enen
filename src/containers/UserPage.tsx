@@ -1,12 +1,12 @@
-import * as React from "react";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import loader from "../helpers/loader";
-import { login, register } from "../actions/user/login";
-import getArticles from "../actions/article/getArticles";
-import { logout } from "../actions/user/logout";
+import * as React from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import loader from '../helpers/loader';
+import { login, register } from '../actions/user/login';
+import getArticles from '../actions/article/getArticles';
+import { logout } from '../actions/user/logout';
 
-import User from "../components/User";
+import User from '../components/User';
 
 import {
   Avatar,
@@ -24,7 +24,7 @@ import {
   Tooltip,
   Typography,
   withStyles
-} from "@material-ui/core";
+} from '@material-ui/core';
 
 interface IProps {
   classes: any;
@@ -35,6 +35,7 @@ interface IProps {
   login: (username: string, password: string) => any;
   register: (username: string, password: string) => any;
   getArticles: () => void;
+  token: string;
 }
 
 interface IState {
@@ -44,23 +45,23 @@ interface IState {
 
 const styles = {
   modal: {
-    position: "absolute",
-    top: "30%",
-    left: "50%",
-    marginLeft: "-250px",
-    outline: "none"
+    position: 'absolute',
+    top: '30%',
+    left: '50%',
+    marginLeft: '-250px',
+    outline: 'none'
   },
   container: {
-    backgroundColor: "white",
-    boxShadow: "lightGray",
-    width: "500px",
-    height: "400px",
-    overflowY: "auto"
+    backgroundColor: 'white',
+    boxShadow: 'lightGray',
+    width: '500px',
+    height: '400px',
+    overflowY: 'auto'
   },
   search: {
-    width: "500px",
-    backgroundColor: "white",
-    boxShadow: "lightGray"
+    width: '500px',
+    backgroundColor: 'white',
+    boxShadow: 'lightGray'
   }
 } as any;
 
@@ -68,6 +69,12 @@ class UserModal extends React.Component<IProps, IState> {
   public constructor(props: IProps) {
     super(props);
     this.state = {};
+  }
+
+  public componentDidUpdate(old: IProps) {
+    if (old.token !== this.props.token) {
+      this.props.toggler();
+    }
   }
 
   public render() {
@@ -196,7 +203,7 @@ class UserModal extends React.Component<IProps, IState> {
 }
 
 const mapState = (state: any) => {
-  return { signedIn: state.user.signedIn, anon: state.user.isAnonymous };
+  return { signedIn: state.user.signedIn, token: state.user.token };
 };
 const mapDispatch = (dispatch: any) =>
   bindActionCreators({ login, logout, register, getArticles }, dispatch);
