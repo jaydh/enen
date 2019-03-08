@@ -79,27 +79,27 @@ class ArticleView extends React.Component<IProps, IState> {
 
   public async componentDidMount() {
     const articleId = this.props.match.params.id;
+    console.log(articleId);
     const { HTML, link, metadata } = await this.getArticleData(articleId);
     this.setState({ HTML, link, metadata, fetching: false });
-    document.title += ` - ${this.props.article.metadata.title}`;
-
-    const intervalId = setInterval(() => {
-      this.getBookmark();
-      this.getProgress();
-      this.getArticlesInView();
-    }, 5000);
+    document.title += ` - ${metadata.title}`;
 
     // Find all nodes in page with textContent
     await this.setState({
       articleLinks: Array.from(document.querySelectorAll("div.page a")),
       articleNodeList: Array.from(
         document.querySelectorAll("div.page p")
-      ).filter(el => el.textContent),
-
-      intervalId
+      ).filter(el => el.textContent)
     });
-    console.log("d");
-    this.scrollToBookmark();
+    if (this.props.article) {
+      const intervalId = setInterval(() => {
+        this.getBookmark();
+        this.getProgress();
+        this.getArticlesInView();
+      }, 5000);
+      this.scrollToBookmark();
+      this.setState({ intervalId });
+    }
   }
 
   public componentWillUnmount() {
@@ -161,7 +161,7 @@ class ArticleView extends React.Component<IProps, IState> {
   }
   private getArticleData = async (id: string) => {
     const { article } = this.props;
-    return article.HTMLData
+    return article && article.HTMLData
       ? {
           HTML: article.HTMLData,
           fetching: false,
@@ -170,7 +170,7 @@ class ArticleView extends React.Component<IProps, IState> {
         }
       : await axios({
           method: "GET",
-          url: `${serverIP}/article/get/${article.id}`
+          url: `${serverIP}/article/get/${id}`
         })
           .then(res => {
             return res.data;
