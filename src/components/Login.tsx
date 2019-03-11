@@ -45,7 +45,7 @@ class Login extends React.Component<IProps, IState> {
           md={12}
           lg={12}
         >
-          <form onChange={this.handleUserChange}>
+          <form onChange={this.handleUserChange} onSubmit={this.handleLogin}>
             <Input
               value={usernameInput}
               margin="dense"
@@ -65,7 +65,7 @@ class Login extends React.Component<IProps, IState> {
           md={12}
           lg={12}
         >
-          <form onChange={this.handlePassChange}>
+          <form onChange={this.handlePassChange} onSubmit={this.handleLogin}>
             <Input
               value={passwordInput}
               margin="dense"
@@ -116,19 +116,25 @@ class Login extends React.Component<IProps, IState> {
     });
   };
 
-  private handleLogin = () =>
-    this.state.usernameInput &&
-    this.state.passwordInput &&
-    this.props
-      .login(this.state.usernameInput, this.state.passwordInput)
-      .then(() => this.props.getArticles());
+  private handleLogin = (e?: any) => {
+    e && e.preventDefault();
+    return (
+      this.state.usernameInput &&
+      this.state.passwordInput &&
+      this.props
+        .login(this.state.usernameInput, this.state.passwordInput)
+        .then(() => this.props.getArticles())
+    );
+  };
 
-  private handleRegister = () =>
+  private handleRegister = (e?: any) => {
+    e && e.preventDefault();
     this.state.usernameInput &&
-    this.state.passwordInput &&
-    this.props
-      .register(this.state.usernameInput, this.state.passwordInput)
-      .then(() => this.props.getArticles());
+      this.state.passwordInput &&
+      this.props
+        .register(this.state.usernameInput, this.state.passwordInput)
+        .then(() => this.props.getArticles());
+  };
 }
 
 const mapState = (state: any) => {
