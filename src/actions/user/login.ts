@@ -1,21 +1,24 @@
-import { serverIP } from "../../hosts";
-import axios from "axios";
-import { Dispatch } from "redux";
+import { serverIP } from '../../hosts';
+import axios from 'axios';
+import { Dispatch } from 'redux';
 
 export interface ILogin {
-  type: "LOGIN";
+  type: 'LOGIN';
   token: string;
 }
 
-export const login = (email: string, password: string) => {
+export const login = (userName: string, password: string) => {
   return async (dispatch: Dispatch<any>) => {
     return axios
       .post(`${serverIP}/auth/login`, {
-        email,
+        userName,
         password
       })
       .then(res =>
-        dispatch({ type: "LOGIN", token: res.data && res.data.accessToken })
+        dispatch({
+          type: 'LOGIN',
+          payload: res.data
+        })
       )
       .catch(function(error) {
         console.log(error);
@@ -23,15 +26,18 @@ export const login = (email: string, password: string) => {
   };
 };
 
-export const register = (email: string, password: string) => {
+export const register = (userName: string, password: string) => {
   return async (dispatch: Dispatch<any>) => {
     return await axios
       .post(`${serverIP}/auth/register`, {
-        email,
+        userName,
         password
       })
       .then(res =>
-        dispatch({ type: "LOGIN", token: res.data && res.data.accessToken })
+        dispatch({
+          type: 'LOGIN',
+          payload: res.data
+        })
       )
       .catch(function(error) {
         console.log(error);

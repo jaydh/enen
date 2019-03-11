@@ -57,13 +57,14 @@ export default function addArticle(url: string) {
       headers: { Authorization: `Bearer ${token}` },
       data: { url }
     })
-      .then(res => res && res.data)
+      .then(res => {
+        dispatch(AddArticleFulfilled(url, _id, new Date()));
+        return res && res.data;
+      })
       .catch(function(error) {
         console.log(error);
       });
-    console.log(data);
     const { _id } = data;
-    dispatch(AddArticleFulfilled(url, _id, new Date()));
     const request = async () => {
       const article = await axios({
         method: "GET",

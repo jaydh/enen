@@ -1,46 +1,20 @@
 import * as React from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import loader from '../helpers/loader';
-import { login, register } from '../actions/user/login';
-import getArticles from '../actions/article/getArticles';
-import { logout } from '../actions/user/logout';
-
-import User from '../components/User';
-
-import {
-  Avatar,
-  Button,
-  Divider,
-  Input,
-  InputAdornment,
-  List,
-  ListItemAvatar,
-  ListItem,
-  ListItemText,
-  Grid,
-  Collapse,
-  Modal,
-  Tooltip,
-  Typography,
-  withStyles
-} from '@material-ui/core';
+import Login from '../components/Login';
+import Logout from '../components/Logout';
+import { Grid, Modal, withStyles } from '@material-ui/core';
 
 interface IProps {
   classes: any;
   show: boolean;
   signedIn: boolean;
   toggler: () => void;
-  logout: () => void;
-  login: (username: string, password: string) => any;
-  register: (username: string, password: string) => any;
-  getArticles: () => void;
   token: string;
 }
 
 interface IState {
-  username?: string;
-  password?: string;
+  usernameInput?: string;
+  passwordInput?: string;
 }
 
 const styles = {
@@ -89,128 +63,21 @@ class UserModal extends React.Component<IProps, IState> {
               justify="center"
               alignItems="center"
             >
-              {!signedIn ? (
-                <>
-                  <Grid
-                    className={classes.search}
-                    item
-                    container
-                    justify="center"
-                    xs={12}
-                    sm={12}
-                    md={12}
-                    lg={12}
-                  >
-                    <form onChange={this.handleUserChange}>
-                      <Input
-                        value={this.state.username}
-                        margin="dense"
-                        placeholder="Username"
-                        endAdornment={<InputAdornment position="end" />}
-                      />
-                    </form>
-                  </Grid>
-                  <Divider />
-                  <Grid
-                    className={classes.search}
-                    item
-                    container
-                    justify="center"
-                    xs={12}
-                    sm={12}
-                    md={12}
-                    lg={12}
-                  >
-                    <form onChange={this.handlePassChange}>
-                      <Input
-                        value={this.state.password}
-                        margin="dense"
-                        placeholder="Password"
-                        endAdornment={<InputAdornment position="end" />}
-                      />
-                    </form>
-                  </Grid>
-                  <Divider />
-                  <Grid
-                    className={classes.search}
-                    item
-                    container
-                    justify="center"
-                    xs={12}
-                    sm={12}
-                    md={3}
-                    lg={3}
-                  >
-                    <Button onClick={this.handleLogin}>Login</Button>
-                  </Grid>
-                  <Grid
-                    className={classes.search}
-                    item
-                    container
-                    justify="center"
-                    xs={12}
-                    sm={12}
-                    md={3}
-                    lg={3}
-                  >
-                    <Button onClick={this.handleRegister}>Register</Button>
-                  </Grid>
-                </>
-              ) : (
-                <>
-                  <Grid
-                    className={classes.search}
-                    item
-                    container
-                    justify="center"
-                  >
-                    <Button onClick={this.handleLogoff}>Logout</Button>
-                  </Grid>
-                </>
-              )}
+              {!signedIn ? <Login classes={classes} /> : <Logout />}
             </Grid>
           </div>
         </Modal>
       </>
     );
   }
-
-  private handleUserChange = (e: any) => {
-    e.preventDefault();
-    this.setState({
-      username: e.target.value
-    });
-  };
-  private handlePassChange = (e: any) => {
-    e.preventDefault();
-    this.setState({
-      password: e.target.value
-    });
-  };
-
-  private handleLogin = () =>
-    this.state.username &&
-    this.state.password &&
-    this.props
-      .login(this.state.username, this.state.password)
-      .then(() => this.props.getArticles());
-
-  private handleRegister = () =>
-    this.state.username &&
-    this.state.password &&
-    this.props.register(this.state.username, this.state.password);
-  private handleLogoff = () => this.props.logout();
 }
 
 const mapState = (state: any) => {
-  return { signedIn: state.user.signedIn, token: state.user.token };
+  return {
+    signedIn: state.user.signedIn,
+    token: state.user.token,
+    userName: state.user.userName
+  };
 };
-const mapDispatch = (dispatch: any) =>
-  bindActionCreators({ login, logout, register, getArticles }, dispatch);
 
-export default withStyles(styles)(
-  connect(
-    mapState,
-    mapDispatch
-  )(UserModal)
-);
+export default withStyles(styles)(connect(mapState)(UserModal));

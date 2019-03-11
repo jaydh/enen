@@ -1,5 +1,6 @@
 export default (
   state = {
+    userName: undefined,
     signedIn: false,
     token: undefined,
     iat: undefined,
@@ -9,11 +10,19 @@ export default (
   action: any
 ) => {
   switch (action.type) {
-    case 'LOGIN':
-      return { ...state, token: action.token, signedIn: true };
-    case 'VALIDATE_TOKEN':
+    case "LOGIN":
+      const { payload } = action;
+      const { userName, email, accessToken: token } = payload;
+      return {
+        ...state,
+        userName,
+        email,
+        token,
+        signedIn: true
+      };
+    case "VALIDATE_TOKEN":
       return { ...state, ...action.payload };
-    case 'VALIDATE_TOKEN_FAILED':
+    case "VALIDATE_TOKEN_FAILED":
       return {};
     default:
       return state;

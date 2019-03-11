@@ -1,1 +1,1 @@
-export const serverIP = "https://backend.enen.io:4300";
+export const serverIP = 'https://backend.enen.io:4300';
