@@ -45,7 +45,7 @@ export default () => {
       async (article: { id: string }) => {
         return axios({
           method: "GET",
-          url: `${serverIP}/article/get/${article.id}`
+          url: `${serverIP}/article/${article.id}`
         })
           .then(
             res =>
