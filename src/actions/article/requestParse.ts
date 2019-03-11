@@ -5,7 +5,7 @@ export const requestServerParse = (url: string) => {
   return async dispatch => {
     const id = await axios({
       method: "POST",
-      url: `${serverIP}/article/add`,
+      url: `${serverIP}/article`,
       data: { url }
     })
       .then(res => res.data)

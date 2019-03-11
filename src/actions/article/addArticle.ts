@@ -68,7 +68,7 @@ export default function addArticle(url: string) {
     const request = async () => {
       const article = await axios({
         method: "GET",
-        url: `${serverIP}/article/get/${_id}`
+        url: `${serverIP}/article/${_id}`
       })
         .then(res => res.data)
         .catch(function(error) {
