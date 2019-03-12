@@ -120,7 +120,7 @@ blockquote:before,
 blockquote:after,
 q:before,
 q:after {
-  content: '';
+  content: "";
   content: none;
 }
 table {
@@ -166,6 +166,7 @@ body {
 }
 
 .img-fluid {
+  object-fit: cover;
   max-width: 100%;
   height: auto;
 }

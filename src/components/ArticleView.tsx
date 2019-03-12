@@ -79,7 +79,6 @@ class ArticleView extends React.Component<IProps, IState> {
 
   public async componentDidMount() {
     const articleId = this.props.match.params.id;
-    console.log(articleId);
     const { HTML, link, metadata } = await this.getArticleData(articleId);
     this.setState({ HTML, link, metadata, fetching: false });
     document.title += ` - ${metadata.title}`;
@@ -170,7 +169,7 @@ class ArticleView extends React.Component<IProps, IState> {
         }
       : await axios({
           method: "GET",
-          url: `${serverIP}/article/get/${id}`
+          url: `${serverIP}/article/${id}`
         })
           .then(res => {
             return res.data;
@@ -196,7 +195,7 @@ class ArticleView extends React.Component<IProps, IState> {
     if (node.name === "img") {
       node.attribs.class = "img-fluid";
       return (
-        <Grid container={true} justify="center" className={classes.image}>
+        <Grid container={true} item justify="center" className={classes.image}>
           {convertNodeToElement(node, index, this.transform)}
         </Grid>
       );
@@ -292,7 +291,6 @@ class ArticleView extends React.Component<IProps, IState> {
     const elements = this.state.articleNodeList;
     const { bookmark } = this.props.article;
     if (elements) {
-      console.log("d", this.state);
       const target = Array.from(elements).find(
         (el: any) => el.textContent === bookmark
       ) as HTMLElement;
@@ -346,7 +344,7 @@ const mapDispatchToProps = (dispatch: any) =>
   );
 
 const styles = {
-  image: { padding: "4em" },
+  image: { padding: "1em" },
   pre: { borderLeft: "4px outset gray", margin: "2em", paddingLeft: "1em" },
   quote: { borderLeft: "4px outset purple", margin: "2em", paddingLeft: "1em" },
   root: { padding: "2em 1em" },
