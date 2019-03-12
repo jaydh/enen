@@ -102,7 +102,7 @@ class Embedded extends React.Component<IProps, IState> {
     const request = async () => {
       const { article } = await axios({
         method: "POST",
-        url: `${serverIP}/article/add`,
+        url: `${serverIP}/article`,
         data: { url }
       })
         .then(res => res.data)
