@@ -68,6 +68,7 @@ class Login extends React.Component<IProps, IState> {
           <form onChange={this.handlePassChange} onSubmit={this.handleLogin}>
             <Input
               value={passwordInput}
+              type="password"
               margin="dense"
               placeholder="Password"
               endAdornment={<InputAdornment position="end" />}
