@@ -17,7 +17,7 @@ import { MoreVert } from "@material-ui/icons";
 
 interface IProps {
   id: string;
-  link: string;
+  url: string;
   classes: any;
 }
 
@@ -48,7 +48,7 @@ class Options extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const { id, link, classes } = this.props;
+    const { id, url, classes } = this.props;
     const { open, smallDevice } = this.state;
     return smallDevice ? (
       <div className={classes.root}>
@@ -82,7 +82,7 @@ class Options extends React.Component<IProps, IState> {
                       <SetFontSize />
                     </MenuItem>
                     <MenuItem>
-                      <FollowLink link={link} />
+                      <FollowLink url={url} />
                     </MenuItem>
                     <MenuItem>
                       <ToggleCompleted id={id} />
@@ -96,7 +96,7 @@ class Options extends React.Component<IProps, IState> {
       </div>
     ) : (
       <>
-        <FollowLink link={link} />
+        <FollowLink url={url} />
         <ToggleCompleted id={id} />
         <SetFontSize />
       </>

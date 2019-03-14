@@ -49,19 +49,17 @@ class Article extends React.Component<IProps, IState> {
 
   public render() {
     const { article, classes } = this.props;
-    const { progress } = article;
-    const title = (article.metadata && article.metadata.title) || article.link;
-    const siteName =
-      article.metadata &&
-      (article.metadata.siteName || article.metadata.ogSiteName);
-    const description = article.metadata && article.metadata.excerpt;
+    const { progress, metadata, url } = article;
+    const title =
+      metadata && (metadata.title || metadata.ogTitle)
+        ? metadata.title || metadata.ogTitle
+        : url;
 
-    const secondary =
-      siteName && description
-        ? `${siteName} - ${description}`
-        : siteName
-        ? siteName
-        : description;
+    const siteName = metadata && (metadata.siteName || metadata.ogSiteName);
+    const description = metadata && metadata.excerpt;
+    const secondary = `${siteName ? siteName : ""} ${
+      description ? "-" + description : ""
+    }`;
 
     const image =
       article.metadata && (article.metadata.image || article.metadata.logo)
@@ -120,7 +118,7 @@ class Article extends React.Component<IProps, IState> {
               </Typography>
               <Grid container={true} alignItems="flex-end" justify="flex-end">
                 <ToggleCompleted id={article.id} />
-                <FollowLink link={article.link} />
+                <FollowLink url={article.url} />
                 <IconButton
                   className={classes.button}
                   color="secondary"

@@ -1,12 +1,12 @@
-import * as React from 'react';
+import * as React from "react";
 
-import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/core/styles';
-import ExternalIcon from '@material-ui/icons/Launch';
+import IconButton from "@material-ui/core/IconButton";
+import { withStyles } from "@material-ui/core/styles";
+import ExternalIcon from "@material-ui/icons/Launch";
 
 interface IProps {
   classes: any;
-  link: string;
+  url: string;
 }
 
 class FollowLink extends React.Component<IProps> {
@@ -29,14 +29,14 @@ class FollowLink extends React.Component<IProps> {
     );
   }
   private handleGoToLink() {
-    window.open(this.props.link, '_blank');
+    window.open(this.props.url, "_blank");
   }
 }
 
 const styles = {
   button: {
-    colorPrimary: '#ff0000',
-    colorSecondary: '#ff0000',
+    colorPrimary: "#ff0000",
+    colorSecondary: "#ff0000",
     margin: 5
   }
 };

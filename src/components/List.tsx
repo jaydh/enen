@@ -1,12 +1,12 @@
-import { isBefore } from 'date-fns';
-import * as Fuse from 'fuse.js';
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { IArticle } from '../reducers/articles';
-import Article from './Article';
+import { isBefore } from "date-fns";
+import * as Fuse from "fuse.js";
+import * as React from "react";
+import { connect } from "react-redux";
+import { IArticle } from "../reducers/articles";
+import Article from "./Article";
 
-import MaterialList from '@material-ui/core/List';
-import { withStyles } from '@material-ui/core/styles';
+import MaterialList from "@material-ui/core/List";
+import { withStyles } from "@material-ui/core/styles";
 
 interface IProps {
   articles: IArticle[];
@@ -20,7 +20,7 @@ interface IState {
 class List extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { expandedPanel: '' };
+    this.state = { expandedPanel: "" };
     this.handleChange = this.handleChange.bind(this);
   }
   public render() {
@@ -34,14 +34,14 @@ class List extends React.Component<IProps, IState> {
             handler={this.handleChange(t.id, this.state.expandedPanel === t.id)}
             id={t.id}
           />
-        ))}{' '}
+        ))}{" "}
       </MaterialList>
     );
   }
 
   private handleChange = (id: string, expanded: boolean) => (event: any) => {
     this.setState({
-      expandedPanel: expanded ? '' : id
+      expandedPanel: expanded ? "" : id
     });
   };
 }
@@ -53,14 +53,14 @@ const getSearchedArticles = (articles: IArticle[], search: string) => {
   const options = {
     distance: articles.length,
     keys: [
-      'metadata.title',
-      'metadata.ogTitle',
-      'metadata.description',
-      'metadata.ogDescription',
-      'metadata.siteName',
-      'metadata.ogSiteName',
-      'link',
-      'projects'
+      "metadata.title",
+      "metadata.ogTitle",
+      "metadata.description",
+      "metadata.ogDescription",
+      "metadata.siteName",
+      "metadata.ogSiteName",
+      "link",
+      "projects"
     ],
     location: 0,
     maxPatternLength: 32,
@@ -86,20 +86,20 @@ const getSortedArticles = (articles: IArticle[], sort: string) => {
     const aTitle =
       a.metadata && (a.metadata.title || a.metadata.ogTitle)
         ? a.metadata.title || a.metadata.ogTitle
-        : a.link;
+        : a.url;
 
     const bTitle =
       b.metadata && (b.metadata.title || b.metadata.ogTitle)
         ? b.metadata.title || b.metadata.ogTitle
-        : b.link;
+        : b.url;
     switch (sort) {
-      case 'title':
+      case "title":
         return aTitle.localeCompare(bTitle);
-      case 'date':
+      case "date":
         return isBefore(a.addedAt, b.addedAt) ? 1 : -1;
-      case 'title-reverse':
+      case "title-reverse":
         return bTitle.localeCompare(aTitle);
-      case 'date-reverse':
+      case "date-reverse":
         return isBefore(b.addedAt, a.addedAt) ? 1 : -1;
     }
     return 1;
