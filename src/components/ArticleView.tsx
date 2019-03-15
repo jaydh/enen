@@ -55,7 +55,7 @@ interface IProps {
 
 interface IState {
   HTML?: string;
-  link?: string;
+  url?: string;
   metadata?: any;
   progress?: number;
   fetching: boolean;
@@ -79,8 +79,10 @@ class ArticleView extends React.Component<IProps, IState> {
 
   public async componentDidMount() {
     const articleId = this.props.match.params.id;
-    const { HTML, link, metadata } = await this.getArticleData(articleId);
-    this.setState({ HTML, link, metadata, fetching: false });
+    const article = await this.getArticleData(articleId);
+    const { HTML, url, metadata } = article;
+    this.props.updateLastArticle(article);
+    this.setState({ HTML, url, metadata, fetching: false });
     document.title += ` - ${metadata.title}`;
 
     // Find all nodes in page with textContent
@@ -108,11 +110,11 @@ class ArticleView extends React.Component<IProps, IState> {
 
   public render() {
     const { classes, fontSize } = this.props;
-    const { HTML, fetching, metadata, link } = this.state;
+    const { HTML, fetching, metadata, url } = this.state;
     const title =
       metadata && (metadata.title || metadata.ogTitle)
         ? metadata.title || metadata.ogTitle
-        : link;
+        : url;
 
     const siteName = metadata && (metadata.siteName || metadata.ogSiteName);
     const description = metadata && metadata.excerpt;
@@ -164,8 +166,8 @@ class ArticleView extends React.Component<IProps, IState> {
       ? {
           HTML: article.HTMLData,
           fetching: false,
-          link: article.link ? article.link : undefined,
-          metadata: article.metadata ? article.metadata : undefined
+          url: article.url,
+          metadata: article.metadata
         }
       : await axios({
           method: "GET",

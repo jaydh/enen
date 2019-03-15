@@ -126,8 +126,8 @@ class Options extends React.Component<IProps, IState> {
 const mapStateToProps = (state: any) => {
   const lastArticle = state.ui.lastArticle;
   return {
-    id: lastArticle ? lastArticle.id : undefined,
-    link: lastArticle ? lastArticle.link : undefined
+    id: lastArticle && lastArticle.id,
+    url: lastArticle && lastArticle.url
   };
 };
 
