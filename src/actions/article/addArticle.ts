@@ -76,7 +76,6 @@ export default function addArticle(url: string) {
           console.log(error);
         });
 
-      console.log(article);
       // Stop polling after server signals done fetching
       if (article && !article.fetching) {
         window.clearInterval(interval);
