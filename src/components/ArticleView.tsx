@@ -295,7 +295,6 @@ class ArticleView extends React.Component<IProps, IState> {
         (el: any) => el.textContent === bookmark
       ) as HTMLElement;
       if (target) {
-        console.log("as i");
         target.scrollIntoView({
           behavior: "smooth",
           block: "start",
