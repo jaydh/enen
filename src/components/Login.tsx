@@ -46,12 +46,7 @@ class Login extends React.Component<IProps, IState> {
           lg={12}
         >
           <form onChange={this.handleUserChange} onSubmit={this.handleLogin}>
-            <Input
-              value={usernameInput}
-              margin="dense"
-              placeholder="Username"
-              endAdornment={<InputAdornment position="end" />}
-            />
+            <Input margin="dense" placeholder="Username" />
           </form>
         </Grid>
         <Divider />
@@ -66,13 +61,7 @@ class Login extends React.Component<IProps, IState> {
           lg={12}
         >
           <form onChange={this.handlePassChange} onSubmit={this.handleLogin}>
-            <Input
-              value={passwordInput}
-              type="password"
-              margin="dense"
-              placeholder="Password"
-              endAdornment={<InputAdornment position="end" />}
-            />
+            <Input type="password" margin="dense" placeholder="Password" />
           </form>
         </Grid>
         <Divider />
