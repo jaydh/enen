@@ -6,7 +6,7 @@ export interface IAddArticleRequested {
 }
 export interface IAddArticleFulfilled {
   type: "ADD_ARTICLE_FULFILLED";
-  link: string;
+  url: string;
   id: string;
   addedAt: Date;
 }
@@ -35,14 +35,14 @@ function AddArticleRejected(reason: string): IAddArticleRejected {
 }
 
 function AddArticleFulfilled(
-  link: string,
+  url: string,
   id: string,
   addedAt: Date
 ): IAddArticleFulfilled {
   return {
     addedAt,
     id,
-    link,
+    url,
     type: "ADD_ARTICLE_FULFILLED"
   };
 }
@@ -58,13 +58,14 @@ export default function addArticle(url: string) {
       data: { url }
     })
       .then(res => {
-        dispatch(AddArticleFulfilled(url, _id, new Date()));
         return res && res.data;
       })
       .catch(function(error) {
         console.log(error);
       });
     const { _id } = data;
+    dispatch(AddArticleFulfilled(url, _id, new Date()));
+
     const request = async () => {
       const article = await axios({
         method: "GET",
@@ -75,6 +76,7 @@ export default function addArticle(url: string) {
           console.log(error);
         });
 
+      console.log(article);
       // Stop polling after server signals done fetching
       if (article && !article.fetching) {
         window.clearInterval(interval);

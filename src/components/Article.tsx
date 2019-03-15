@@ -28,7 +28,6 @@ import { withStyles } from "@material-ui/core/styles";
 
 interface IProps {
   article: IArticle;
-  id: string;
   classes: any;
   expanded: boolean;
   handler: (event: any, expanded: any) => void;
@@ -50,11 +49,7 @@ class Article extends React.Component<IProps, IState> {
   public render() {
     const { article, classes } = this.props;
     const { progress, metadata, url } = article;
-    const title =
-      metadata && (metadata.title || metadata.ogTitle)
-        ? metadata.title || metadata.ogTitle
-        : url;
-
+    const title = (metadata && metadata.title) || url;
     const siteName = metadata && (metadata.siteName || metadata.ogSiteName);
     const description = metadata && metadata.excerpt;
     const secondary = `${siteName ? siteName : ""} ${
@@ -140,14 +135,12 @@ class Article extends React.Component<IProps, IState> {
   }
 
   private handleDelete() {
-    this.props.deleteArticle(this.props.id);
+    this.props.deleteArticle(this.props.article.id);
   }
 }
 
 const mapStateToProps = (state: any, ownProps: { id: string }) => {
-  return {
-    article: state.articles.articles.find((t: any) => t.id === ownProps.id)
-  };
+  return {};
 };
 
 const mapDispatchToProps = (dispatch: any) =>
@@ -175,6 +168,6 @@ const styles = {
 };
 
 export default connect(
-  mapStateToProps,
+  undefined,
   mapDispatchToProps
 )(withStyles(styles)(Article));

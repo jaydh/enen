@@ -62,7 +62,7 @@ class ListOptions extends React.Component<IProps> {
 
 const mapStateToProps = (state: any) => {
   return {
-    listEmpty: state.articles.articles.length === 0
+    listEmpty: state.articles.articleIDs.length === 0
   };
 };
 

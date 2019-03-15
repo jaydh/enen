@@ -1,4 +1,4 @@
-import produce from "immer";
+import produce from 'immer';
 
 export interface IArticle {
   id: string;
@@ -12,75 +12,87 @@ export interface IArticle {
   fetching?: boolean;
 }
 
+interface ArticleMap {
+  [key: string]: IArticle;
+}
+
+// fix save articles
+
 export default (
-  state = { articles: [] as IArticle[], labels: [] as any[] },
+  state = {
+    articleIDs: [] as string[],
+    articleData: {} as ArticleMap,
+    labels: [] as any[]
+  },
   action: any
 ) =>
   produce(state, draft => {
     switch (action.type) {
-      case "SAVE_ARTICLES":
-        draft.articles = draft.articles.map((t: IArticle) => {
+      case 'SAVE_ARTICLES':
+        draft.articleIDs.map((id: string) => {
           const search = action.articlesHTML.find(
-            (s: { id: string; HTMLData: string }) => t.id === s.id
+            (s: { id: string; HTMLData: string }) => id === s.id
           );
+          const existingArticle = search && draft.articleData[id];
 
           return {
-            ...t,
+            ...existingArticle,
             HTMLData: search ? search.HTMLData : undefined
           };
         });
         break;
-      case "GET_ARTICLES_FULFILLED":
+      case 'GET_ARTICLES_FULFILLED':
         // non-destructive with persisted articles
-        draft.articles = action.articles.map((t: IArticle) => {
-          const search = draft.articles.find(
-            (s: { id: string }) => t.id === s.id
-          );
-          return { ...t, ...search };
+        //
+        draft.articleIDs = action.articles.map((t: IArticle) => t.id);
+        action.articles.forEach((t: IArticle) => {
+          const existingID = draft.articleIDs.find((id: string) => id === t.id);
+          const existingArticle = existingID && draft.articleData[existingID];
+          draft.articleData[t.id] = existingArticle
+            ? { ...t, ...existingArticle }
+            : { ...t };
         });
         break;
-      case "ADD_ARTICLE_FULFILLED":
-        draft.articles.push({
+      case 'ADD_ARTICLE_FULFILLED':
+        draft.articleIDs.push(action.id);
+        draft.articleData[action.id] = {
           addedAt: action.addedAt,
           id: action.id,
           url: action.url
-        });
+        };
         break;
-      case "DELETE_ARTICLE_FULFILLED":
-        const index = draft.articles.findIndex(
-          (t: IArticle) => t.id === action.id
-        );
-        if (index > 0) {
-          draft.articles.splice(index, 1);
+      case 'DELETE_ARTICLE_FULFILLED':
+        const index = draft.articleIDs.indexOf(action.id);
+        if (index > -1) {
+          draft.articleIDs.splice(index, 1);
+          delete draft.articleData[index];
         }
         break;
-      case "UPDATE_ARTICLE":
-        draft.articles = draft.articles.map((t: IArticle) =>
-          t.id === action.id ? Object.assign({}, t, action.data) : t
+      case 'UPDATE_ARTICLE':
+        const existingArticle = draft.articleData[action.id];
+        draft.articleData[action.id] = Object.assign(
+          {},
+          existingArticle,
+          action.data
         );
         break;
-      case "SET_ARTICLE_COMPLETE_FULFILLED":
-        draft.articles = draft.articles.map((t: IArticle) =>
-          t.id === action.id
-            ? { ...t, completedOn: action.value ? new Date() : undefined }
-            : t
-        );
+      case 'SET_ARTICLE_COMPLETE_FULFILLED':
+        draft.articleData[action.id] = {
+          ...draft.articleData[action.id],
+          completedOn: action.value ? new Date() : undefined
+        };
         break;
-      case "UPDATE_BOOKMARK_FULFILLED":
-        draft.articles = draft.articles.map((t: IArticle) =>
-          t.id === action.id ? { ...t, bookmark: action.bookmark } : t
-        );
+      case 'UPDATE_BOOKMARK_FULFILLED':
+        draft.articleData[action.id] = {
+          ...draft.articleData[action.id],
+          bookmark: action.bookmark
+        };
         break;
-      case "UPDATE_PROGRESS_FULFILLED":
-        draft.articles = draft.articles.map((t: IArticle) =>
-          t.id === action.id ? { ...t, progress: action.progress } : t
-        );
-        break;
-      case "GET_LABELS_FULFILLED":
-        draft.labels = action.labels;
-        break;
-      case "ADD_LABEL_FULFILLED":
-        draft.labels.push(action.label);
+      case 'UPDATE_PROGRESS_FULFILLED':
+        draft.articleData[action.id] = {
+          ...draft.articleData[action.id],
+          progress: action.progress
+        };
         break;
     }
   });

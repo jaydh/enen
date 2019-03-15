@@ -32,7 +32,7 @@ class List extends React.Component<IProps, IState> {
             key={t.id}
             expanded={this.state.expandedPanel === t.id}
             handler={this.handleChange(t.id, this.state.expandedPanel === t.id)}
-            id={t.id}
+            article={t}
           />
         ))}{" "}
       </MaterialList>
@@ -107,7 +107,10 @@ const getSortedArticles = (articles: IArticle[], sort: string) => {
 };
 
 const mapStateToProps = (state: any) => {
-  const filtered = state.articles.articles.filter(
+  const articles = state.articles.articleIDs.map(
+    (id: string) => state.articles.articleData[id]
+  );
+  const filtered = articles.filter(
     (t: IArticle) => state.ui.showCompleted || !t.completedOn
   );
   const searched = getSearchedArticles(filtered, state.ui.search);

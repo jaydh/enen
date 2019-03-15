@@ -44,10 +44,7 @@ class ToggleCompleted extends React.Component<IProps> {
 }
 
 const mapStateToProps = (state: any, ownProps: { id: string }) => {
-  const article = state.articles.articles.find(
-    (t: any) => t.id === ownProps.id
-  );
-
+  const article = state.articles.articleData[ownProps.id];
   return {
     completedOn: article ? article.completedOn : undefined
   };
