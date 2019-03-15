@@ -326,9 +326,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
   return {
     fontSize: state.ui.fontSize,
     uid: state.user.uid,
-    article: state.articles.articles.find(
-      (t: any) => t.id === ownProps.match.params.id
-    )
+    article: state.articles.articleData[ownProps.match.params.id]
   };
 };
 
