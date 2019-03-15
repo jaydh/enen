@@ -1,4 +1,4 @@
-import produce from 'immer';
+import produce from "immer";
 
 export interface IArticle {
   id: string;
@@ -16,8 +16,6 @@ interface ArticleMap {
   [key: string]: IArticle;
 }
 
-// fix save articles
-
 export default (
   state = {
     articleIDs: [] as string[],
@@ -28,22 +26,16 @@ export default (
 ) =>
   produce(state, draft => {
     switch (action.type) {
-      case 'SAVE_ARTICLES':
-        draft.articleIDs.map((id: string) => {
-          const search = action.articlesHTML.find(
-            (s: { id: string; HTMLData: string }) => id === s.id
-          );
-          const existingArticle = search && draft.articleData[id];
-
-          return {
-            ...existingArticle,
-            HTMLData: search ? search.HTMLData : undefined
-          };
-        });
+      case "SAVE_ARTICLES":
+        const { HTMLMap } = action;
+        const ids = Object.keys(HTMLMap);
+        ids.forEach(
+          (id: string) => (draft.articleData[id].HTMLData = HTMLMap[id])
+        );
         break;
-      case 'GET_ARTICLES_FULFILLED':
+
+      case "GET_ARTICLES_FULFILLED":
         // non-destructive with persisted articles
-        //
         draft.articleIDs = action.articles.map((t: IArticle) => t.id);
         action.articles.forEach((t: IArticle) => {
           const existingID = draft.articleIDs.find((id: string) => id === t.id);
@@ -53,7 +45,8 @@ export default (
             : { ...t };
         });
         break;
-      case 'ADD_ARTICLE_FULFILLED':
+
+      case "ADD_ARTICLE_FULFILLED":
         draft.articleIDs.push(action.id);
         draft.articleData[action.id] = {
           addedAt: action.addedAt,
@@ -61,14 +54,16 @@ export default (
           url: action.url
         };
         break;
-      case 'DELETE_ARTICLE_FULFILLED':
+
+      case "DELETE_ARTICLE_FULFILLED":
         const index = draft.articleIDs.indexOf(action.id);
         if (index > -1) {
           draft.articleIDs.splice(index, 1);
           delete draft.articleData[index];
         }
         break;
-      case 'UPDATE_ARTICLE':
+
+      case "UPDATE_ARTICLE":
         const existingArticle = draft.articleData[action.id];
         draft.articleData[action.id] = Object.assign(
           {},
@@ -76,19 +71,22 @@ export default (
           action.data
         );
         break;
-      case 'SET_ARTICLE_COMPLETE_FULFILLED':
+
+      case "SET_ARTICLE_COMPLETE_FULFILLED":
         draft.articleData[action.id] = {
           ...draft.articleData[action.id],
           completedOn: action.value ? new Date() : undefined
         };
         break;
-      case 'UPDATE_BOOKMARK_FULFILLED':
+
+      case "UPDATE_BOOKMARK_FULFILLED":
         draft.articleData[action.id] = {
           ...draft.articleData[action.id],
           bookmark: action.bookmark
         };
         break;
-      case 'UPDATE_PROGRESS_FULFILLED':
+
+      case "UPDATE_PROGRESS_FULFILLED":
         draft.articleData[action.id] = {
           ...draft.articleData[action.id],
           progress: action.progress

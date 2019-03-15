@@ -57,7 +57,6 @@ class Embedded extends React.Component<IProps, IState> {
   public render() {
     const { title, url, fontSize, classes } = this.props;
     const { show, fetching, HTMLData } = this.state;
-    console.log(fetching);
     return (
       <>
         <div className={classes.root}>
@@ -113,7 +112,6 @@ class Embedded extends React.Component<IProps, IState> {
       // Stop polling after server signals done fetching
       if (!article.fetching) {
         window.clearInterval(interval);
-        console.log(article);
         this.setState({ HTMLData: article.HTML, fetching: article.fetching });
       }
     };
