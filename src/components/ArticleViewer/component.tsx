@@ -2,51 +2,37 @@ import { withStyles } from "@material-ui/core/styles";
 import * as React from "react";
 import ReactHTMLParser, { convertNodeToElement } from "react-html-parser";
 import Loadable from "react-loadable";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import updateBookmark from "../actions/article/updateBookmark";
-import updateLastArticle from "../actions/updateLastArticle";
-import updateProgress from "../actions/article/updateProgress";
-import Loader from "../components/Loader";
+import Loader from "../../components/Loader";
 import axios from "axios";
-import { serverIP } from "../hosts";
-import { requestServerParse } from "../actions/article/requestParse";
+import { serverIP } from "../../hosts";
 import { produce } from "immer";
+import { Divider, Grid, Paper, Typography } from "@material-ui/core";
 
-const Divider = Loadable({
-  delay: 200,
-  loader: () => import("@material-ui/core/Divider"),
-  loading: Loader
-});
-import EmbeddedArticle from "./EmbeddedArticle";
-const Grid = Loadable({
-  delay: 200,
-  loader: () => import("@material-ui/core/Grid"),
-  loading: Loader
-});
-const Paper = Loadable({
-  delay: 200,
-  loader: () => import("@material-ui/core/Paper"),
-  loading: Loader
-});
-const Typography = Loadable({
-  delay: 200,
-  loader: () => import("@material-ui/core/Typography"),
-  loading: Loader
-});
 const Highlight = Loadable({
   delay: 200,
   loader: () => import("react-highlight"),
   loading: Loader
 });
 
+const EmbeddedArticle = Loadable({
+  delay: 200,
+  loader: () => import("../EmbeddedArticle"),
+  loading: Loader
+});
+
+const styles = {
+  image: { padding: "1em" },
+  pre: { borderLeft: "4px outset gray", margin: "2em", paddingLeft: "1em" },
+  quote: { borderLeft: "4px outset purple", margin: "2em", paddingLeft: "1em" },
+  root: { padding: "2em 1em" },
+  title: { marginBottom: "4em" }
+};
+
 interface IProps {
   article?: any;
   fontSize: number;
   classes: any;
-  getHTML: () => void;
   match: any;
-  uid: string;
   updateBookmark: (id: string, bookmark: string) => void;
   updateProgress: (id: string, progress: number) => void;
   updateLastArticle: (t: string) => void;
@@ -160,6 +146,7 @@ class ArticleView extends React.Component<IProps, IState> {
       </Grid>
     );
   }
+
   private getArticleData = async (id: string) => {
     const { article } = this.props;
     return article && article.HTMLData
@@ -171,7 +158,8 @@ class ArticleView extends React.Component<IProps, IState> {
         }
       : await axios({
           method: "GET",
-          url: `${serverIP}/article/${id}`
+          url: `${serverIP}/article/id`,
+          params: { id }
         })
           .then(res => {
             return res.data;
@@ -235,7 +223,7 @@ class ArticleView extends React.Component<IProps, IState> {
     ) {
       return (
         <EmbeddedArticle
-          title={node.children[0].data}
+          hyperlinkName={node.children[0].data}
           url={node.attribs.href}
         />
       );
@@ -323,33 +311,4 @@ class ArticleView extends React.Component<IProps, IState> {
   };
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
-  return {
-    fontSize: state.ui.fontSize,
-    uid: state.user.uid,
-    article: state.articles.articleData[ownProps.match.params.id]
-  };
-};
-
-const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators(
-    {
-      updateLastArticle,
-      updateBookmark,
-      updateProgress,
-      requestServerParse
-    },
-    dispatch
-  );
-
-const styles = {
-  image: { padding: "1em" },
-  pre: { borderLeft: "4px outset gray", margin: "2em", paddingLeft: "1em" },
-  quote: { borderLeft: "4px outset purple", margin: "2em", paddingLeft: "1em" },
-  root: { padding: "2em 1em" },
-  title: { marginBottom: "4em" }
-};
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(ArticleView));
+export default withStyles(styles)(ArticleView);

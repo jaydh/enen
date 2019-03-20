@@ -14,8 +14,9 @@ const UserPage = Loadable({
   loader: () => import("./containers/UserPage"),
   loading: Loader as any
 });
+
 const ArticleView = Loadable({
-  loader: () => import("./components/ArticleView"),
+  loader: () => import("./components/ArticleViewer"),
   loading: Loader as any
 });
 const StatsMain = Loadable({
