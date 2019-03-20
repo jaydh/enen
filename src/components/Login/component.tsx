@@ -1,15 +1,5 @@
 import * as React from "react";
-import {
-  Button,
-  Divider,
-  Grid,
-  Input,
-  InputAdornment
-} from "@material-ui/core";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import getArticles from "../actions/article/getArticles";
-import { login, register } from "../actions/user/login";
+import { Button, Divider, Grid, Input } from "@material-ui/core";
 
 interface IProps {
   classes: any;
@@ -31,7 +21,6 @@ class Login extends React.Component<IProps, IState> {
 
   public render() {
     const { classes } = this.props;
-    const { usernameInput, passwordInput } = this.state;
 
     return (
       <>
@@ -127,17 +116,4 @@ class Login extends React.Component<IProps, IState> {
   };
 }
 
-const mapState = (state: any) => {
-  return {
-    userName: state.user.userName,
-    email: state.user.email
-  };
-};
-
-const mapDispatch = (dispatch: any) =>
-  bindActionCreators({ login, register, getArticles }, dispatch);
-
-export default connect(
-  mapState,
-  mapDispatch
-)(Login);
+export default Login;

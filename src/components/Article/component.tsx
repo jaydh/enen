@@ -1,30 +1,25 @@
 import * as React from "react";
-import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { bindActionCreators } from "redux";
-import deleteArticle from "../actions/article/deleteArticle";
-import { IArticle } from "../reducers/articles";
-import FollowLink from "./actionDispatchers/FollowLink";
-import ToggleCompleted from "./actionDispatchers/ToggleCompleted";
-
-import Avatar from "@material-ui/core/Avatar";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import Fade from "@material-ui/core/Fade";
-import Grid from "@material-ui/core/Grid";
-import Icon from "@material-ui/core/Icon";
-import IconButton from "@material-ui/core/IconButton";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Typography from "@material-ui/core/Typography";
-import ReadIcon from "@material-ui/icons/ChromeReaderMode";
-import DateRangeIcon from "@material-ui/icons/DateRange";
-import DeleteIcon from "@material-ui/icons/Delete";
-
-import { withStyles } from "@material-ui/core/styles";
+import { IArticle } from "../../reducers/articles";
+import FollowLink from "../actionDispatchers/FollowLink";
+import ToggleCompleted from "../actionDispatchers/ToggleCompleted";
+import {
+  Avatar,
+  CircularProgress,
+  ExpansionPanel,
+  ExpansionPanelDetails,
+  ExpansionPanelSummary,
+  Fade,
+  Grid,
+  Icon,
+  IconButton,
+  LinearProgress,
+  ListItem,
+  ListItemText,
+  Typography,
+  withStyles
+} from "@material-ui/core";
+import { ChromeReaderMode, DateRange, Delete } from "@material-ui/icons";
 
 interface IProps {
   article: IArticle;
@@ -90,7 +85,7 @@ class Article extends React.Component<IProps, IState> {
                         className={classes.button}
                         aria-label="Delete"
                       >
-                        <ReadIcon />
+                        <ChromeReaderMode />
                       </IconButton>
                     </Link>
                   </Fade>
@@ -106,7 +101,7 @@ class Article extends React.Component<IProps, IState> {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <Icon>
-                <DateRangeIcon />
+                <DateRange />
               </Icon>
               <Typography>
                 {new Date(article.addedAt).toLocaleDateString()}
@@ -120,7 +115,7 @@ class Article extends React.Component<IProps, IState> {
                   aria-label="Delete"
                   onClick={this.handleDelete}
                 >
-                  <DeleteIcon />
+                  <Delete />
                 </IconButton>
               </Grid>
             </ExpansionPanelDetails>
@@ -138,13 +133,6 @@ class Article extends React.Component<IProps, IState> {
     this.props.deleteArticle(this.props.article.id);
   }
 }
-
-const mapStateToProps = (state: any, ownProps: { id: string }) => {
-  return {};
-};
-
-const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators({ deleteArticle }, dispatch);
 
 const styles = {
   button: {
@@ -167,7 +155,4 @@ const styles = {
   }
 };
 
-export default connect(
-  undefined,
-  mapDispatchToProps
-)(withStyles(styles)(Article));
+export default withStyles(styles)(Article);

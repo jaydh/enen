@@ -1,8 +1,8 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import FollowLink from "./actionDispatchers/FollowLink";
-import SetFontSize from "./actionDispatchers/SetFontSize";
-import ToggleCompleted from "./actionDispatchers/ToggleCompleted";
+import FollowLink from "../actionDispatchers/FollowLink";
+import SetFontSize from "../actionDispatchers/SetFontSize";
+import ToggleCompleted from "../actionDispatchers/ToggleCompleted";
 import {
   Button,
   Popper,
@@ -123,14 +123,6 @@ class Options extends React.Component<IProps, IState> {
     });
 }
 
-const mapStateToProps = (state: any) => {
-  const lastArticle = state.ui.lastArticle;
-  return {
-    id: lastArticle && lastArticle.id,
-    url: lastArticle && lastArticle.url
-  };
-};
-
 const styles = {
   options: {
     colorPrimary: "#855a91",
@@ -141,4 +133,4 @@ const styles = {
   }
 };
 
-export default withStyles(styles)(connect(mapStateToProps)(Options));
+export default withStyles(styles)(Options);

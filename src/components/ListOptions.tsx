@@ -1,10 +1,9 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Grid, Fade } from "@material-ui/core";
-import AddArticle from "../components/AddArticleForm";
-import List from "../components/List";
+import AddArticleForm from "../components/AddArticleForm";
 import Search from "../components/Search";
-import Save from "../components/Save";
+import Save from "./actionDispatchers/Save";
 import Sort from "../components/Sort";
 
 interface IProps {
@@ -33,7 +32,7 @@ class ListOptions extends React.Component<IProps> {
           md={listEmpty ? 12 : 5}
           lg={listEmpty ? 12 : 5}
         >
-          <AddArticle />
+          <AddArticleForm />
         </Grid>
         {!listEmpty && (
           <>

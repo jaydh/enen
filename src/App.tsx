@@ -10,10 +10,6 @@ const ListMain = Loadable({
   loader: () => import("./containers/ListMain"),
   loading: Loader as any
 });
-const UserPage = Loadable({
-  loader: () => import("./containers/UserPage"),
-  loading: Loader as any
-});
 
 const ArticleView = Loadable({
   loader: () => import("./components/ArticleViewer"),

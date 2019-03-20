@@ -1,9 +1,6 @@
 import * as React from "react";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
-import loader from "../helpers/loader";
-const ArticleViewOptions = loader(() => import("./ArticleViewOptions"));
-const UserModal = loader(() => import("../containers/UserPage"));
+import ArticleViewOptions from "../ArticleViewOptions";
+import UserModal from "../../containers/UserModal";
 
 import {
   BottomNavigationAction,
@@ -34,7 +31,7 @@ interface IState {
   showModal: boolean;
 }
 
-class LabelBottomNavigation extends React.Component<IProps, IState> {
+class Nav extends React.Component<IProps, IState> {
   public constructor(props: IProps) {
     super(props);
     this.state = {
@@ -50,7 +47,7 @@ class LabelBottomNavigation extends React.Component<IProps, IState> {
     window.addEventListener("resize", this.handleResize);
   }
   public render() {
-    const { classes, location, user, signedIn } = this.props;
+    const { classes, location, user } = this.props;
     const { smallDevice } = this.state;
     const { displayName } = user;
     const initials = displayName ? displayName.match(/\b\w/g).join("") : "";
@@ -118,14 +115,4 @@ const styles = {
   }
 } as any;
 
-const mapStateToProps = (state: any) => {
-  return {
-    lastArticleId: state.ui.lastArticle ? state.ui.lastArticle.id : undefined,
-    user: state.user,
-    signedIn: state.user.signedIn
-  };
-};
-
-const connected = connect(mapStateToProps)(LabelBottomNavigation);
-
-export default withRouter(withStyles(styles)(connected));
+export default withStyles(styles)(Nav);

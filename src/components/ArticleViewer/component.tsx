@@ -1,4 +1,3 @@
-import { withStyles } from "@material-ui/core/styles";
 import * as React from "react";
 import ReactHTMLParser, { convertNodeToElement } from "react-html-parser";
 import Loadable from "react-loadable";
@@ -6,7 +5,14 @@ import Loader from "../../components/Loader";
 import axios from "axios";
 import { serverIP } from "../../hosts";
 import { produce } from "immer";
-import { Divider, Grid, Paper, Typography } from "@material-ui/core";
+import {
+  Divider,
+  Grid,
+  Paper,
+  Typography,
+  withStyles
+} from "@material-ui/core";
+import * as he from "he";
 
 const Highlight = Loadable({
   delay: 200,
@@ -16,7 +22,7 @@ const Highlight = Loadable({
 
 const EmbeddedArticle = Loadable({
   delay: 200,
-  loader: () => import("../EmbeddedArticle"),
+  loader: () => import("./EmbeddedArticle"),
   loading: Loader
 });
 
@@ -96,7 +102,9 @@ class ArticleView extends React.Component<IProps, IState> {
 
   public render() {
     const { classes, fontSize } = this.props;
-    const { HTML, fetching, metadata, url } = this.state;
+    const { HTML: html, fetching, metadata, url } = this.state;
+    // decode HTML Entities
+    const HTML = he.decode(html);
     const title =
       metadata && (metadata.title || metadata.ogTitle)
         ? metadata.title || metadata.ogTitle

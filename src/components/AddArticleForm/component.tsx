@@ -1,19 +1,12 @@
-import Input from "@material-ui/core/Input";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import { withStyles } from "@material-ui/core";
+import { Grid, Input, InputAdornment } from "@material-ui/core";
 import * as React from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import addArticle from "../actions/article/addArticle";
-import parseUri from "../helpers/parseURI";
-import { IArticle } from "../reducers/articles";
-import AddArticle from "./actionDispatchers/AddArticle";
-import { Grid } from "@material-ui/core";
+import { IArticle } from "../../reducers/articles";
+import AddArticle from "../actionDispatchers/AddArticle";
+import parseUri from "../../helpers/parseURI";
 
 interface IProps {
   addArticle: (t: string) => (dispatch: any, getState: any) => Promise<void>;
   articles: IArticle[];
-  classes: any;
 }
 
 interface IState {
@@ -21,19 +14,10 @@ interface IState {
   value: string;
 }
 
-const styles = { root: {} };
-
-// ask db to fetch article in background
-
 class AddArticleForm extends React.Component<IProps, IState> {
   constructor(props: any) {
     super(props);
     this.state = { valid: false, value: "" };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.getValidationState = this.getValidationState.bind(this);
-    this.readClipboard = this.readClipboard.bind(this);
   }
 
   public componentDidMount() {
@@ -45,13 +29,11 @@ class AddArticleForm extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const { classes } = this.props;
     return (
       <Grid container justify="center">
         <Grid item>
           <form onSubmit={this.handleSubmit}>
             <Input
-              className={classes.root}
               error={this.state.value.length > 0 && !this.state.valid}
               onChange={this.handleChange}
               value={this.state.value}
@@ -72,29 +54,29 @@ class AddArticleForm extends React.Component<IProps, IState> {
     );
   }
 
-  private handleChange(event: any) {
+  private handleChange = (event: any) => {
     this.setState({
       valid: this.getValidationState(event.target.value),
       value: event.target.value
     });
-  }
+  };
 
-  private handleSubmit(event: any) {
+  private handleSubmit = (event: any) => {
     event.preventDefault();
     this.props.addArticle(this.state.value);
     this.state.valid
       ? this.setState({ value: "", valid: false })
       : alert("invalid hyperlink");
-  }
+  };
 
-  private getValidationState(value: string) {
+  private getValidationState = (value: string) => {
     const parse = parseUri(value) as any;
     const exists = false;
     // Checks if valid hyperlink
     return !exists && parse.authority && parse.protocol ? true : false;
-  }
+  };
 
-  private readClipboard() {
+  private readClipboard = () => {
     // Copy from clipboard if valid article
     if (!document.hidden && (navigator as any).clipboard.readText) {
       (navigator as any).clipboard
@@ -105,17 +87,7 @@ class AddArticleForm extends React.Component<IProps, IState> {
             : Promise.resolve()
         );
     }
-  }
+  };
 }
 
-const mapStateToProps = (state: any) => {
-  return {
-    articles: state.articles
-  };
-};
-const mapDispatch = (dispatch: any) =>
-  bindActionCreators({ addArticle }, dispatch);
-export default connect(
-  mapStateToProps,
-  mapDispatch
-)(withStyles(styles)(AddArticleForm));
+export default AddArticleForm;

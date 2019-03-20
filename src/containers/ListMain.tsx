@@ -1,13 +1,11 @@
-import * as React from "react";
-
-import loader from "../helpers/loader";
-const List = loader(() => import("../components/List"));
-const ListOptions = loader(() => import("../components/ListOptions"));
-import { Grid } from "@material-ui/core";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import getArticles from "../actions/article/getArticles";
-import { validateToken } from "../actions/user/validateToken";
+import * as React from 'react';
+import List from '../components/List';
+import ListOptions from '../components/ListOptions';
+import { Grid } from '@material-ui/core';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import getArticles from '../actions/article/getArticles';
+import { validateToken } from '../actions/user/validateToken';
 
 interface IProps {
   getArticles: () => void;
