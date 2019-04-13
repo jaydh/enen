@@ -9,10 +9,9 @@ import DoneIcon from "@material-ui/icons/Done";
 import { withStyles } from "@material-ui/core/styles";
 
 interface IProps {
-  id: string;
   completedOn?: Date;
   classes: any;
-  setArticleComplete: (id: string, t: boolean) => void;
+  setArticleComplete: (t: boolean) => void;
 }
 
 class ToggleCompleted extends React.Component<IProps> {
@@ -36,10 +35,9 @@ class ToggleCompleted extends React.Component<IProps> {
   }
 
   private handleToggleComplete() {
-    const id = this.props.id;
     return this.props.completedOn
-      ? this.props.setArticleComplete(id, false)
-      : this.props.setArticleComplete(id, true);
+      ? this.props.setArticleComplete(false)
+      : this.props.setArticleComplete(true);
   }
 }
 
@@ -50,8 +48,11 @@ const mapStateToProps = (state: any, ownProps: { id: string }) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators({ setArticleComplete }, dispatch);
+const mapDispatchToProps = (dispatch: any, ownProps: { id: string }) =>
+  bindActionCreators(
+    { setArticleComplete: (t: boolean) => setArticleComplete(ownProps.id, t) },
+    dispatch
+  );
 
 const styles = {
   button: {

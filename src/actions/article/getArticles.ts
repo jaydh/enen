@@ -63,7 +63,6 @@ export default () => {
     );
 
     const articles = await Promise.all(articleDataPromises);
-    console.log(articles)
     dispatch(getArticlesFulfilled(articles));
   };
 };

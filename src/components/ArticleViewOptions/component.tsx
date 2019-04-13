@@ -1,5 +1,4 @@
 import * as React from "react";
-import { connect } from "react-redux";
 import FollowLink from "../actionDispatchers/FollowLink";
 import SetFontSize from "../actionDispatchers/SetFontSize";
 import ToggleCompleted from "../actionDispatchers/ToggleCompleted";
