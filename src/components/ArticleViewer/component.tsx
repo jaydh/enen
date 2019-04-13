@@ -104,7 +104,7 @@ class ArticleView extends React.Component<IProps, IState> {
     const { classes, fontSize } = this.props;
     const { HTML: html, fetching, metadata, url } = this.state;
     // decode HTML Entities
-    const HTML = he.decode(html);
+    const HTML = html && he.decode(html);
     const title =
       metadata && (metadata.title || metadata.ogTitle)
         ? metadata.title || metadata.ogTitle
@@ -180,12 +180,9 @@ class ArticleView extends React.Component<IProps, IState> {
   private transform = (node: any, index: number) => {
     const { classes, fontSize } = this.props;
     if (node.name && node.name.startsWith("h")) {
+      console.log(node.name);
       return (
-        <Typography
-          variant="h1"
-          gutterBottom={true}
-          style={{ fontSize: fontSize + 4 }}
-        >
+        <Typography variant={node.name} gutterBottom={true} align="center">
           {convertNodeToElement(node, index, this.transform)}
         </Typography>
       );
@@ -200,7 +197,7 @@ class ArticleView extends React.Component<IProps, IState> {
     }
     if (node.name === "p") {
       return (
-        <Typography paragraph={true} style={{ fontSize }}>
+        <Typography paragraph={true} inline={true} style={{ fontSize }}>
           {convertNodeToElement(node, index, this.transform)}
         </Typography>
       );
@@ -212,6 +209,7 @@ class ArticleView extends React.Component<IProps, IState> {
         </div>
       );
     }
+
     if (node.name === "blockquote") {
       return (
         <div className={classes.quote}>

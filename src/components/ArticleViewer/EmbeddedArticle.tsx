@@ -7,33 +7,32 @@ import {
   Paper,
   withStyles,
   Typography
-} from "@material-ui/core";
-import Read from "@material-ui/icons/ChromeReaderMode";
-import * as React from "react";
-import ReactHTMLParser, { convertNodeToElement } from "react-html-parser";
-import Loadable from "react-loadable";
-import { connect } from "react-redux";
-import Loader from "../../components/Loader";
-import { serverIP } from "../../hosts";
-import axios from "axios";
-import { produce } from "immer";
-import { bindActionCreators, Dispatch } from "redux";
-import { requestServerParse } from "../../actions/article/requestParse";
-import AddArticle from "../actionDispatchers/AddArticle";
+} from '@material-ui/core';
+import Read from '@material-ui/icons/ChromeReaderMode';
+import * as React from 'react';
+import ReactHTMLParser, { convertNodeToElement } from 'react-html-parser';
+import Loadable from 'react-loadable';
+import { connect } from 'react-redux';
+import Loader from '../../components/Loader';
+import { serverIP } from '../../hosts';
+import axios from 'axios';
+import { produce } from 'immer';
+import { bindActionCreators, Dispatch } from 'redux';
+import { requestServerParse } from '../../actions/article/requestParse';
+import AddArticle from '../actionDispatchers/AddArticle';
 
 const Highlight = Loadable({
-  loader: () => import("react-highlight"),
+  loader: () => import('react-highlight'),
   loading: Loader
 });
 
 const styles = {
-  button: { fontSize: "15px" },
-  embed: { paddingLeft: "1em" },
-  image: { padding: "4em" },
-  pre: { borderLeft: "4px outset gray", margin: "2em", paddingLeft: "1em" },
-  quote: { borderLeft: "4px outset purple", margin: "2em", paddingLeft: "1em" },
-  root: { display: "inline-block" },
-  title: { marginBottom: "4em" }
+  button: { fontSize: '15px' },
+  embed: { paddingLeft: '1em' },
+  image: { padding: '4em' },
+  pre: { borderLeft: '4px outset gray', margin: '2em', paddingLeft: '1em' },
+  quote: { borderLeft: '4px outset purple', margin: '2em', paddingLeft: '1em' },
+  title: { marginBottom: '4em' }
 };
 
 interface IProps {
@@ -70,9 +69,9 @@ class Embedded extends React.Component<IProps, IState> {
   public async componentDidMount() {
     // Find all nodes in page with textContent
     await this.setState({
-      articleLinks: Array.from(document.querySelectorAll("div.page a")),
+      articleLinks: Array.from(document.querySelectorAll('div.page a')),
       articleNodeList: Array.from(
-        document.querySelectorAll("div.page p")
+        document.querySelectorAll('div.page p')
       ).filter(el => el.textContent)
     });
 
@@ -89,29 +88,27 @@ class Embedded extends React.Component<IProps, IState> {
 
     const siteName = metadata && metadata.siteName;
     const description = metadata && metadata.excerpt;
-    const subtitle = `${siteName ? siteName : ""} ${
-      description ? "-" + description : ""
+    const subtitle = `${siteName ? siteName : ''} ${
+      description ? '-' + description : ''
     }`;
     return (
-      <>
-        <div className={classes.root}>
-          <a href={url}>{hyperlinkName}</a>
-          <IconButton onClick={this.handleExpand} color="primary">
-            <Read className={classes.button} />
-          </IconButton>
-          <AddArticle link={url} />
-        </div>
-        <Collapse
-          timeout={500}
-          in={show}
-          children={
-            <Paper className={classes.embed} style={{ fontSize }}>
-              {fetching && (
-                <Grid container={true} alignItems="center" justify="center">
-                  <CircularProgress />
-                </Grid>
-              )}
-              {show && HTML && (
+      <span>
+        <a href={url}>{hyperlinkName}</a>
+        <IconButton onClick={this.handleExpand} color="primary">
+          <Read className={classes.button} />
+        </IconButton>
+        <AddArticle link={url} />
+        {show && (
+          <Collapse
+            timeout={500}
+            in={show}
+            children={
+              <Paper className={classes.embed} style={{ fontSize }}>
+                {fetching && (
+                  <Grid container={true} alignItems="center" justify="center">
+                    <CircularProgress />
+                  </Grid>
+                )}
                 <>
                   <Typography
                     style={{ fontSize: fontSize + 10 }}
@@ -132,11 +129,11 @@ class Embedded extends React.Component<IProps, IState> {
                     transform: this.transform
                   })}
                 </>
-              )}
-            </Paper>
-          }
-        />
-      </>
+              </Paper>
+            }
+          />
+        )}{' '}
+      </span>
     );
   }
 
@@ -150,11 +147,12 @@ class Embedded extends React.Component<IProps, IState> {
   private getArticleData = () => {
     const { url } = this.props;
     return axios({
-      method: "GET",
+      method: 'GET',
       url: `${serverIP}/article/url`,
       params: { url }
     })
       .then(res => {
+        console.log(res);
         return this.setState(res.data);
       })
       .catch(function(error) {
@@ -193,7 +191,7 @@ class Embedded extends React.Component<IProps, IState> {
   private transform = (node: any, index: number) => {
     if (node) {
       const { classes, fontSize } = this.props;
-      if (node.name && node.name.startsWith("h")) {
+      if (node.name && node.name.startsWith('h')) {
         return (
           <Typography
             variant="h1"
@@ -204,29 +202,29 @@ class Embedded extends React.Component<IProps, IState> {
           </Typography>
         );
       }
-      if (node.name === "img") {
-        node.attribs.class = "img-fluid";
+      if (node.name === 'img') {
+        node.attribs.class = 'img-fluid';
         return (
           <Grid container={true} justify="center" className={classes.image}>
             {convertNodeToElement(node, index, this.transform)}
           </Grid>
         );
       }
-      if (node.name === "p") {
+      if (node.name === 'p') {
         return (
           <Typography paragraph={true} style={{ fontSize }}>
             {convertNodeToElement(node, index, this.transform)}
           </Typography>
         );
       }
-      if (node.name === "pre") {
+      if (node.name === 'pre') {
         return (
           <div className={classes.pre}>
             <Highlight>{convertNodeToElement(node)}</Highlight>
           </div>
         );
       }
-      if (node.name === "blockquote") {
+      if (node.name === 'blockquote') {
         return (
           <div className={classes.quote}>
             {node.children.map((t: any) => (
