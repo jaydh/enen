@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import App from "./App";
 import Loader from "./components/Loader";
 import appReducer from "./reducers/index";
-import { unregister } from "./registerServiceWorker";
+import register from "./registerServiceWorker";
 import { Provider } from "react-redux";
 import { applyMiddleware, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
@@ -41,4 +41,4 @@ ReactDOM.render(
   document.getElementById("root")
 );
 
-unregister();
+register();
