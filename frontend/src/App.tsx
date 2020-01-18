@@ -15,10 +15,6 @@ const ArticleView = Loadable({
   loader: () => import("./components/ArticleViewer"),
   loading: Loader as any
 });
-const StatsMain = Loadable({
-  loader: () => import("./containers/StatsMain"),
-  loading: Loader as any
-});
 const Nav = Loadable({
   loader: () => import("./components/Nav"),
   loading: Loader as any
@@ -38,7 +34,6 @@ class App extends React.Component {
               <Route exact={true} path="/" component={ListMain} />
               <Route path="/list" component={ListMain} />
               <Route path="/article/:id" component={ArticleView} />
-              <Route path="/stats" component={StatsMain} />
               <Route path="/about" component={About} />
             </ScrollToTop>
           </div>
