@@ -21,8 +21,7 @@
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.1",
     "redux-persist": "^5.10.0",
-    "redux-thunk": "^2.3.0",
-    "victory": "^31.0.0"
+    "redux-thunk": "^2.3.0"
   },
   "homepage": "https://enen.io",
   "scripts": {
@@ -31,8 +30,8 @@
     "test": "react-scripts test --env=jsdom",
     "analyze": "source-map-explorer build/static/js/main.*"
   },
+  "proxy": "http://localhost:4000",
   "devDependencies": {
-    "@firebase/app-types": "^0.3.2",
     "@types/jest": "^23.3.10",
     "@types/node": "^10.12.18",
     "@types/react": "^16.7.18",

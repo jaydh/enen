@@ -54,7 +54,7 @@ interface IState {
   articleLinks: HTMLAnchorElement[];
   articleNodeList: Element[];
   intervalId: any;
-  requestedParses: string[];
+  requestedParses: any;
 }
 
 class ArticleView extends React.Component<IProps, IState> {
@@ -261,11 +261,7 @@ class ArticleView extends React.Component<IProps, IState> {
     );
     targets.forEach(async (e: HTMLAnchorElement) => {
       if (!requestedParses.find((url: string) => url === e.href)) {
-        this.setState(
-          produce(draft => {
-            draft.requestedParses.push(e.href);
-          })
-        );
+        this.setState({requestedParses:[...this.state.requestedParses,e.href]});
         this.props.requestServerParse(e.href);
       }
     });

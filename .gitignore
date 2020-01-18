@@ -2,8 +2,9 @@
 
 # dependencies
 /node_modules
+/frontEnd/node_modules
+/target
 
-/functions/node_modules
 
 # testing
 /coverage
