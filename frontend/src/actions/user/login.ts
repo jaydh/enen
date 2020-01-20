@@ -7,11 +7,11 @@ export interface ILogin {
   token: string;
 }
 
-export const login = (userName: string, password: string) => {
+export const login = (username: string, password: string) => {
   return async (dispatch: Dispatch<any>) => {
     return axios
       .post(`${serverIP}/auth/login`, {
-        userName,
+        username,
         password
       })
       .then(res =>
@@ -26,11 +26,11 @@ export const login = (userName: string, password: string) => {
   };
 };
 
-export const register = (userName: string, password: string) => {
+export const register = (username: string, password: string) => {
   return async (dispatch: Dispatch<any>) => {
     return await axios
       .post(`${serverIP}/auth/register`, {
-        userName,
+        username,
         password
       })
       .then(res =>
