@@ -2,7 +2,7 @@ table! {
     users (id) {
         id -> Int4,
         username -> Varchar,
-        passwordhash -> Nullable<Varchar>,
+        passwordhash -> Varchar,
         emailaddress -> Nullable<Varchar>,
     }
 }

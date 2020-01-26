@@ -42,6 +42,6 @@ fn main() {
     let pool = db::get_connect();
     rocket::ignite()
         .manage(pool)
-        .mount("/", routes![index, files, auth::login])
+        .mount("/", routes![index, files, auth::login, auth::register_new_user])
         .launch();
 }
