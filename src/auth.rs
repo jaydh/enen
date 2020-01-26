@@ -21,6 +21,11 @@ pub struct InvadlidCredentialsError {
     error: String
 }
 
+#[derive(Responder, Debug)]
+#[response(status = 400, content_type = "json")]
+pub struct UserExistError {
+    username: String
+}
 
 #[post("/auth/login", format = "json", data = "<credentials>")]
 pub fn login(pool: State<PgPool>, credentials: Json<Credentials>) -> Result<JsonValue, InvadlidCredentialsError> {
@@ -41,21 +46,15 @@ pub fn login(pool: State<PgPool>, credentials: Json<Credentials>) -> Result<Json
                         })
                     }
                 }
-                Err(e) => Err(InvadlidCredentialsError {
+                Err(_e) => Err(InvadlidCredentialsError {
                     error: String::from("Unable to verify Credentials")
                 })
             }
         },
-        Err(e) => Err(InvadlidCredentialsError {
+        Err(_e) => Err(InvadlidCredentialsError {
                     error: String::from("Unable to verify Credentials")
                 })
     }
-}
-
-#[derive(Responder, Debug)]
-#[response(status = 402, content_type = "json")]
-pub struct UserExistError {
-    username: String
 }
 
 #[post("/auth/register", format = "json", data = "<credentials>")]
@@ -64,22 +63,21 @@ pub fn register_new_user(pool: State<PgPool>, credentials: Json<Credentials>) ->
     let user: Result<User, result::Error> = 
              users.filter(username.eq(&credentials.0.username)).first::<User>(&connection);
     match user {
-        Ok(v) => Err(UserExistError {
+        Ok(_v) => Err(UserExistError {
             username: credentials.0.username
         }),
-        Err(e) => { 
+        Err(_e) => { 
                 let hashed_password = hash(&credentials.0.password, DEFAULT_COST).unwrap();
                 let connection = pool.get().unwrap();
                 let res = diesel::insert_into(users)
-                    .values((&username.eq(credentials.0.username), &passwordhash.eq(&hashed_password)))
+                    .values((&username.eq(&credentials.0.username), &passwordhash.eq(&hashed_password)))
                     .execute(&connection);
                 match res {
-                    Ok(v) => Ok(rocket_contrib::json!({
+                    Ok(_v) => Ok(rocket_contrib::json!({
                     "success": true,
                     "passwordhash": hashed_password
                     })),
-                    Err(e) => Err(UserExistError{ username: String::from("adfasf") })
-
+                    Err(_e) => Err(UserExistError{ username: String::from(&credentials.0.username) })
                 }
         }
     }
