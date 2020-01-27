@@ -44,6 +44,7 @@ class Logout extends React.Component<IProps, IState> {
                   placeholder="Email"
                   endAdornment={<InputAdornment position="end" />}
                 />
+                <Button onClick={this.handleSubmit}>Connect</Button>
               </form>
             ) : (
               <Button onClick={this.toggleShow}>Connect email</Button>

@@ -13,6 +13,9 @@ import { PersistGate } from "redux-persist/integration/react";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web and AsyncStorage for react-native
 import { Grid, CircularProgress } from "@material-ui/core";
 import rootReducer from "./reducers";
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
 
 const persistConfig = {
   key: "root",

@@ -5,6 +5,8 @@ extern crate rocket;
 extern crate serde_derive;
 #[macro_use]
 extern crate diesel;
+#[macro_use] 
+extern crate serde_json;
 
 extern crate dotenv;
 extern crate r2d2;
@@ -42,6 +44,6 @@ fn main() {
     let pool = db::get_connect();
     rocket::ignite()
         .manage(pool)
-        .mount("/", routes![index, files, auth::login, auth::register_new_user])
+        .mount("/", routes![index, files, auth::login, auth::register_new_user, auth::connect_email_for_user])
         .launch();
 }
